@@ -1,17 +1,27 @@
 import React, { useState } from 'react';
 import {
-  AppBar, Toolbar, Typography, Button, Box, TextField, CircularProgress
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Box,
+  TextField,
+  CircularProgress,
+  Menu,
+  MenuItem,
+  IconButton,
 } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu'; // Ícone para o menu hambúrguer
 import { Login } from '../api/login/Login'; // Importa a lógica da API
 
-// As props que o Header espera receber do App.tsx
+// Props que o Header espera receber do App.tsx
 interface HeaderProps {
   isLoggedIn: boolean;
   onLoginSuccess: () => void;
   onLogout: () => void;
 }
 
-// Itens do menu que só aparecem quando o utilizador está logado
+// Itens do menu que aparecem quando o utilizador está logado
 const menuItems = [
   { text: 'Dashboard', path: '/dashboard' },
   { text: 'Solicitações', path: '/solicitacoes' },
@@ -26,6 +36,17 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn, onLoginSuccess, onLogout })
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Estados para controlar os menus responsivos
+  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
+
+  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElNav(event.currentTarget);
+  };
+
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
 
   // Função para lidar com a submissão do formulário de login
   const handleSubmitLogin = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -48,12 +69,13 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn, onLoginSuccess, onLogout })
     }
   };
   
-  const handleNavClick = (e: React.MouseEvent<HTMLButtonElement>, path: string) => {
+  const handleNavClick = (e: React.MouseEvent<HTMLElement>, path: string) => {
     e.preventDefault();
     // No futuro, quando tiver rotas, a lógica de navegação virá aqui.
     // Ex: navigate(path);
     console.log(`Simulando navegação para: ${path}`);
     alert(`A navegação para "${path}" ainda não foi implementada.`);
+    handleCloseNavMenu(); // Fecha o menu após o clique
   };
 
   return (
@@ -62,12 +84,50 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn, onLoginSuccess, onLogout })
         {isLoggedIn ? (
           // --- APARÊNCIA QUANDO LOGADO ---
           <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
-              <Typography variant="h6" component="div" sx={{ whiteSpace: 'nowrap' }}>
-                Nexus Ambiental
-              </Typography>
+            {/* Ícone do Menu Hambúrguer para telas pequenas */}
+            <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+              <IconButton
+                size="large"
+                aria-label="menu de navegação"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleOpenNavMenu}
+                color="inherit"
+              >
+                <MenuIcon />
+              </IconButton>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorElNav}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+                open={Boolean(anchorElNav)}
+                onClose={handleCloseNavMenu}
+                sx={{
+                  display: { xs: 'block', md: 'none' },
+                }}
+              >
+                {menuItems.map((item) => (
+                  <MenuItem key={item.text} onClick={(e) => handleNavClick(e, item.path)}>
+                    <Typography textAlign="center">{item.text}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
             </Box>
-            <Box sx={{ flex: 2, display: { xs: 'none', md: 'flex' }, justifyContent: 'center', fontSize: '20px' }}>
+
+            <Typography variant="h6" component="div" sx={{ whiteSpace: 'nowrap', display: { xs: 'none', md: 'flex' } }}>
+              Nexus Ambiental
+            </Typography>
+
+            {/* Menu completo para telas grandes */}
+            <Box sx={{ flex: 2, display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
               {menuItems.map((item) => (
                 <Button 
                   key={item.text} 
@@ -76,7 +136,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn, onLoginSuccess, onLogout })
                   sx={{ 
                     margin: '0 10px', 
                     textTransform: 'none', 
-                    fontSize: 'inherit',
+                    fontSize: '1rem',
                     '&:hover': {
                       backgroundColor: 'rgba(255, 255, 255, 0.08)'
                     }
@@ -86,6 +146,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn, onLoginSuccess, onLogout })
                 </Button>
               ))}
             </Box>
+            
             <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
               <Typography variant="body1" sx={{ mr: 2, display: { xs: 'none', sm: 'block' } }}>
                 Olá, Utilizador
@@ -94,7 +155,6 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn, onLoginSuccess, onLogout })
                 color="inherit" 
                 variant="outlined" 
                 onClick={onLogout}
-                // Adicionado para corrigir a borda azul
                 sx={{
                   borderColor: 'rgba(255, 255, 255, 0.5)',
                   '&:hover': {
