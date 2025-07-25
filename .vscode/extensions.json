@@ -1,5 +1,12 @@
 {
     "recommendations": [
-        "google.geminicodeassist"
+        "google.geminicodeassist",
+        "ms-vscode.vscode-typescript-next",
+        "ecmel.vscode-html-css",
+        "eamodio.gitlens",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "pkief.material-icon-theme",
+        "bradlc.vscode-tailwindcss"
     ]
 }
