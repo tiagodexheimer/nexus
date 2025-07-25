@@ -1,33 +1,43 @@
 import React from 'react';
-import { Box, CssBaseline } from '@mui/material';
+import { Box, CssBaseline, Typography } from '@mui/material';
 import Header from './Header';
 import Sidebar from './Sidebar';
 
-// 1. Definimos que o Layout agora espera receber uma propriedade 'onLogout'
+// Layout agora recebe todas as props relacionadas à autenticação
 interface LayoutProps {
   children: React.ReactNode;
+  isLoggedIn: boolean;
+  onLoginSuccess: () => void;
   onLogout: () => void;
 }
 
-// 2. Recebemos 'onLogout' junto com 'children'
-const Layout: React.FC<LayoutProps> = ({ children, onLogout }) => {
+const Layout: React.FC<LayoutProps> = ({ children, isLoggedIn, onLoginSuccess, onLogout }) => {
   return (
     <>
       <CssBaseline />
       <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        {/* 3. Passamos a propriedade 'onLogout' para o componente Header */}
-        <Header onLogout={onLogout} />
+        {/* Passa todas as props recebidas para o Header */}
+        <Header 
+          isLoggedIn={isLoggedIn} 
+          onLoginSuccess={onLoginSuccess} 
+          onLogout={onLogout} 
+        />
         <Box sx={{ display: 'flex', flexGrow: 1 }}>
           <Sidebar />
           <Box
             component="main"
             sx={{
               flexGrow: 1,
-              backgroundColor: '#F5F5DC', // Bege Madeira Clara
+              backgroundColor: '#F5F5DC',
               p: 3,
             }}
           >
-            {children}
+            {/* Só mostra o conteúdo principal se o usuário estiver logado */}
+            {isLoggedIn ? children : (
+              <Typography variant="h5" align="center" sx={{ mt: 5 }}>
+                Por favor, faça o login para continuar.
+              </Typography>
+            )}
           </Box>
         </Box>
       </Box>
