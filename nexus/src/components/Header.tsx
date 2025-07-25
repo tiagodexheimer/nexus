@@ -1,117 +1,83 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   AppBar,
   Toolbar,
   Typography,
   Button,
   Box,
-  IconButton,
-  Menu,
-  MenuItem,
-  useMediaQuery,
-  useTheme,
-  Divider,
+  Link,
 } from '@mui/material';
-import PublicIcon from '@mui/icons-material/Public';
-import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 
+// Array com os itens do menu
 const menuItems = ['Dashboard', 'Solicitações', 'Rotas', 'Relatórios', 'Gerenciar'];
 
+/**
+ * Componente de Cabeçalho (Header)
+ * * Exibe uma barra de navegação no topo da página com:
+ * - Logo/Nome da plataforma à esquerda.
+ * - Itens de menu de navegação no centro.
+ * - Saudação ao usuário e botão de sair à direita.
+ */
 const Header: React.FC = () => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const LogoSection = () => (
-    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <PublicIcon sx={{ mr: 1.5, fontSize: '2.2rem' }} />
-      <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
-        Nexus
-      </Typography>
-    </Box>
-  );
-
-  const DesktopMenu = () => (
-    <Box sx={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
-      {menuItems.map((item) => (
-        <Button key={item} color="inherit" sx={{ fontWeight: 500, mx: 1 }}>
-          {item}
-        </Button>
-      ))}
-    </Box>
-  );
-
-  const UserSectionDesktop = () => (
-    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <Typography sx={{ mr: 2 }}>Olá Usuário</Typography>
-      <Button
-        color="inherit"
-        variant="outlined"
-        startIcon={<LogoutIcon />}
-        sx={{
-          borderColor: 'rgba(255, 255, 255, 0.5)',
-          '&:hover': { borderColor: 'white', backgroundColor: 'rgba(255, 255, 255, 0.1)' },
-        }}
-      >
-        Sair
-      </Button>
-    </Box>
-  );
-
-  const MobileMenu = () => (
-    <>
-      <IconButton size="large" edge="end" color="inherit" aria-label="menu" onClick={handleMenuOpen}>
-        <MenuIcon />
-      </IconButton>
-      <Menu
-        id="mobile-menu"
-        anchorEl={anchorEl}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        keepMounted
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-        sx={{ mt: 5 }}
-      >
-        <MenuItem disabled>
-          <Typography variant="body2" color="text.secondary">Olá Usuário</Typography>
-        </MenuItem>
-        <Divider />
-        {menuItems.map((item) => (
-          <MenuItem key={item} onClick={handleMenuClose}>
-            {item}
-          </MenuItem>
-        ))}
-        <Divider />
-        <MenuItem onClick={handleMenuClose}>
-          <LogoutIcon sx={{ mr: 1.5, color: 'text.secondary' }} fontSize="small" />
-          Sair
-        </MenuItem>
-      </Menu>
-    </>
-  );
-
   return (
-    <AppBar position="static" sx={{ backgroundColor: '#556B2F', zIndex: theme.zIndex.drawer + 1 }}>
-      <Toolbar sx={{ position: 'relative', justifyContent: 'space-between' }}>
-        <LogoSection />
-        {!isMobile ? (
-          <>
-            <DesktopMenu />
-            <UserSectionDesktop />
-          </>
-        ) : (
-          <MobileMenu />
-        )}
+    // O AppBar funciona como o container principal do cabeçalho.
+    <AppBar position="static" sx={{ backgroundColor: '#4B830D' }}>
+      {/* Toolbar ajuda a organizar o conteúdo horizontalmente e adiciona um padding padrão. */}
+      <Toolbar>
+        {/* Box principal que usa flexbox para distribuir o espaço. */}
+        <Box sx={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'space-between', // Espaça os itens: um no início, um no meio, um no fim.
+          alignItems: 'center' // Alinha os itens verticalmente ao centro.
+        }}>
+
+          {/* Seção Esquerda: Nome da Plataforma */}
+          <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }}>
+            <Typography variant="h6" component="div" sx={{ display: 'flex', alignItems: "center", whiteSpace: 'nowrap' }}>
+              <MenuIcon />
+              Nexus Ambiental
+            </Typography>
+          </Box>
+
+          {/* Seção Central: Menu de Navegação */}
+          <Box sx={{ flex: 2, display: 'flex', justifyContent: 'center', fontSize: '20  px' }}>
+            {menuItems.map((item) => (
+              <Button
+                key={item}
+                href="#" // O componente Button pode receber um href e se comportará como um link
+                color="inherit"
+                
+                sx={{
+                  margin: '0 10px',
+                  padding: '6px 8px',
+                  borderRadius: '4px',
+                  transition: 'background-color 0.3s ease',
+                  textTransform: 'none', // Impede que o texto do botão fique em maiúsculas
+                  fontSize: 'inherit',   // Garante que o tamanho da fonte seja o mesmo
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                    color:'inherit'
+                  },
+                }}
+              >
+                {item}
+              </Button>
+            ))}
+          </Box>
+
+          {/* Seção Direita: Saudação e Botão Sair */}
+          <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+            <Typography variant="body1" sx={{ marginRight: 2 }}>
+              Olá, Usuário
+            </Typography>
+            <Button color="inherit" variant="outlined">
+              Sair
+            </Button>
+          </Box>
+
+        </Box>
       </Toolbar>
     </AppBar>
   );

@@ -1,9 +1,12 @@
 import React from 'react';
-import { Typography } from '@mui/material';
+import { CssBaseline, ThemeProvider, Typography } from '@mui/material';
 import Layout from './components/Layout';
+import theme from './styles/theme';
 
 const App: React.FC = () => {
   return (
+    <ThemeProvider theme={theme}>
+    <CssBaseline />
     <Layout>
       <Typography variant="h4" component="h1" gutterBottom>
         Bem-vindo ao Dashboard
@@ -13,6 +16,7 @@ const App: React.FC = () => {
         Você pode adicionar seus componentes, gráficos e tabelas aqui.
       </Typography>
     </Layout>
+    </ThemeProvider>
   );
 };
 
