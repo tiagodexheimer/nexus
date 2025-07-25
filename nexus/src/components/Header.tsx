@@ -10,7 +10,6 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 
-// Array com os itens do menu
 const menuItems = [
   { text: 'Dashboard', path: '/dashboard' },
   { text: 'Solicitações', path: '/solicitacoes' },
@@ -19,15 +18,13 @@ const menuItems = [
   { text: 'Gerenciar', path: '/gerenciar' },
 ];
 
-/**
- * Componente de Cabeçalho (Header)
- * * Exibe uma barra de navegação no topo da página com:
- * - Logo/Nome da plataforma à esquerda.
- * - Itens de menu de navegação no centro.
- * - Saudação ao usuário e botão de sair à direita.
- */
-const Header: React.FC = () => {
-  // O estado e as funções de manipulação do menu devem estar DENTRO do componente.
+// 1. Definimos que o Header agora espera receber a propriedade 'onLogout'
+interface HeaderProps {
+  onLogout: () => void;
+}
+
+// 2. Recebemos 'onLogout' como propriedade do componente
+const Header: React.FC<HeaderProps> = ({ onLogout }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -40,46 +37,26 @@ const Header: React.FC = () => {
   };
 
   return (
-    // O AppBar funciona como o container principal do cabeçalho.
     <AppBar position="static" sx={{ backgroundColor: '#4B830D' }}>
-      {/* Toolbar ajuda a organizar o conteúdo horizontalmente e adiciona um padding padrão. */}
       <Toolbar>
-        {/* Box principal que usa flexbox para distribuir o espaço. */}
-        <Box sx={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'space-between', // Espaça os itens: um no início, um no meio, um no fim.
-          alignItems: 'center' // Alinha os itens verticalmente ao centro.
-        }}>
-
-          {/* Seção Esquerda: Nome da Plataforma e Menu Mobile */}
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          {/* Seção Esquerda */}
           <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
-            {/* Ícone do Menu que só aparece em telas pequenas */}
             <MenuIcon
               sx={{ display: { xs: 'flex', md: 'none' }, marginRight: 1, cursor: 'pointer' }}
-              onClick={handleMenuOpen} // Adiciona o evento de clique para abrir o menu
+              onClick={handleMenuOpen}
             />
-            {/* Menu que é controlado pelo estado 'anchorEl' */}
             <Menu
               id="menu-appbar"
               anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
               keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
+              transformOrigin={{ vertical: 'top', horizontal: 'left' }}
               open={open}
-              onClose={handleMenuClose} // Fecha o menu se clicar fora
+              onClose={handleMenuClose}
               sx={{
                 display: { xs: 'block', md: 'none' },
-                // Adicione esta parte para mudar o fundo
-                '& .MuiPaper-root': {
-                  backgroundColor: (theme) => theme.palette.primary.main, // <-- Sua cor de fundo aqui
-                },
+                '& .MuiPaper-root': { backgroundColor: (theme) => theme.palette.primary.main },
               }}
             >
               {menuItems.map((item) => (
@@ -88,52 +65,30 @@ const Header: React.FC = () => {
                 </MenuItem>
               ))}
             </Menu>
-            
             <Typography variant="h6" component="div" sx={{ whiteSpace: 'nowrap' }}>
               Nexus Ambiental
             </Typography>
           </Box>
 
-          {/* Seção Central: Menu de Navegação para Desktop */}
-          <Box sx={{
-            flex: 2,
-            display: { xs: 'none', md: 'flex' }, // Oculta em mobile, exibe em desktop
-            justifyContent: 'center',
-            fontSize: '20px'
-          }}>
+          {/* Seção Central */}
+          <Box sx={{ flex: 2, display: { xs: 'none', md: 'flex' }, justifyContent: 'center', fontSize: '20px' }}>
             {menuItems.map((item) => (
-              <Button
-                key={item.text}
-                href={item.path} // O componente Button pode receber um href e se comportará como um link
-                color="inherit"
-                sx={{
-                  margin: '0 10px',
-                  padding: '6px 8px',
-                  borderRadius: '4px',
-                  transition: 'background-color 0.3s ease',
-                  textTransform: 'none', // Impede que o texto do botão fique em maiúsculas
-                  fontSize: 'inherit',   // Garante que o tamanho da fonte seja o mesmo
-                  '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                    color: 'inherit'
-                  }
-                }}
-              >
+              <Button key={item.text} href={item.path} color="inherit" sx={{ margin: '0 10px', textTransform: 'none', fontSize: 'inherit', '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.15)' } }}>
                 {item.text}
               </Button>
             ))}
           </Box>
 
-          {/* Seção Direita: Saudação e Botão Sair */}
+          {/* Seção Direita */}
           <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
             <Typography variant="body1" sx={{ marginRight: 2, display: { xs: 'none', sm: 'block' } }}>
-              Olá, Usuário
+              Olá, Utilizador
             </Typography>
-            <Button color="inherit" variant="outlined">
+            {/* 3. Usamos a função 'onLogout' no evento onClick do botão */}
+            <Button color="inherit" variant="outlined" onClick={onLogout}>
               Sair
             </Button>
           </Box>
-
         </Box>
       </Toolbar>
     </AppBar>
