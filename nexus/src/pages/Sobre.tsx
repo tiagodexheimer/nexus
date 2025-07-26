@@ -50,12 +50,10 @@ const SobrePage: React.FC = () => {
     <>
       <Grid container component="main" sx={{ height: 'calc(100vh - 64px)', backgroundColor: 'background.paper' }}>
           {/* Lado Esquerdo: Descrição da Empresa */}
-          <Grid // A sintaxe para o Grid foi alterada para ser compatível com as versões mais recentes do MUI
+          <Grid
+              xs={12}
+              md={6}
               sx={{
-                  gridColumn: { xs: '1 / -1', md: 'span 6' }, // Ocupa todas as colunas em telas pequenas (xs) e 6 colunas em telas médias (md)
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
                   p: { xs: 2, sm: 4 },
               }}
           >
@@ -102,17 +100,33 @@ const SobrePage: React.FC = () => {
           </Grid>
 
           {/* Lado Direito: Formulário de Cadastro */}
-          <Grid // A sintaxe para o Grid foi alterada para ser compatível com as versões mais recentes do MUI
-              sx={{
-                  gridColumn: { xs: '1 / -1', md: 'span 6' }, // Ocupa todas as colunas em telas pequenas (xs) e 6 colunas em telas médias (md)
+          <Grid
+              xs={12}
+              md={6}
+              sx={{// O fundo da área de cadastro é cinza claro
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
               }}
           >
+             <Paper
+                  elevation={6}
+                  sx={{
+                      p: { xs: 2, sm: 4 },
+                      backgroundColor: 'white',
+                      color: 'white',
+                      borderRadius: 2,
+                      width: '100%',
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center'
+                  }}
+              >
               <Container maxWidth="sm">
                   <CadastroForm onSignUpSuccess={handleSignUpSuccess} />
               </Container>
+              </Paper>
           </Grid>
       </Grid>
       <SuccessDialog open={dialogOpen} onClose={handleCloseDialog} />
