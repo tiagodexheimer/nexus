@@ -1,277 +1,242 @@
 import React, { useState } from 'react';
 import {
-  Container,
-  Box,
+  AppBar,
+  Toolbar,
   Typography,
-  TextField,
   Button,
-  Grid,
-  Paper,
+  Box,
+  TextField,
   CircularProgress,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Avatar,
+  Menu,
+  MenuItem,
+  IconButton,
+  Avatar, // Adicione Avatar para usar como imagem
+  // Adicione AdbIcon aqui
 } from '@mui/material';
-import { registerUser } from '../api/register/Register';
-import theme from '../styles/theme';
-import { ThemeProvider } from '@mui/material/styles';
+import MenuIcon from '@mui/icons-material/Menu'; // Ícone para o menu hambúrguer
+import { Login } from '../api/login/Login'; // Importa a lógica da API
 
-const logoSrc = "/logo.png"; // Caminho para o seu logo
+// Props que o Header espera receber do App.tsx
+interface HeaderProps {
+  isLoggedIn: boolean;
+  onLoginSuccess: () => void;
+  onLogout: () => void;
+}
 
-// --- Componente do Formulário de Cadastro ---
-const SignUpForm = ({ onSignUpSuccess }: { onSignUpSuccess: () => void }) => {
-  const [name, setName] = useState('');
+// Itens do menu que aparecem quando o utilizador está logado
+const menuItems = [
+  { text: 'Dashboard', path: '/dashboard' },
+  { text: 'Solicitações', path: '/solicitacoes' },
+  { text: 'Rotas', path: '/rotas' },
+  { text: 'Relatórios', path: '/relatorios' },
+  { text: 'Gerenciar', path: '/gerenciar' },
+];
+
+const logoSrc = "/logo.png";
+
+const Header: React.FC<HeaderProps> = ({ isLoggedIn, onLoginSuccess, onLogout }) => {
+  // Estados para controlar os campos de login
   const [email, setEmail] = useState('');
-  const [profession, setProfession] = useState('');
-  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  // Estados para controlar os menus responsivos
+  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
+
+  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElNav(event.currentTarget);
+  };
+
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
+
+  // Função para lidar com a submissão do formulário de login
+  const handleSubmitLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError('');
 
-    if (password !== confirmPassword) {
-      setError('As senhas não coincidem.');
+    if (!email || !password) {
+      setError('Preencha ambos os campos.');
       return;
-    }
-    if (!name || !email || !password || !username) {
-        setError('Por favor, preencha todos os campos obrigatórios.');
-        return;
     }
 
     setLoading(true);
     try {
-      await registerUser(name, email, password);
-      onSignUpSuccess();
-    } catch (err: any) {      
-        setError(err.message || 'Ocorreu um erro no cadastro.');
+      await Login(email, password);
+      onLoginSuccess(); // Informa o App.tsx que o login foi bem-sucedido
+    } catch (err: any) {
+      setError(err.message || 'Ocorreu um erro.');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleNavClick = (e: React.MouseEvent<HTMLElement>, path: string) => {
+    e.preventDefault();
+    // No futuro, quando tiver rotas, a lógica de navegação virá aqui.
+    // Ex: navigate(path);
+    console.log(`Simulando navegação para: ${path}`);
+    alert(`A navegação para "${path}" ainda não foi implementada.`);
+    handleCloseNavMenu(); // Fecha o menu após o clique
+  };
+
   return (
-    <Box
-      sx={{
-        my: { xs: 4, md: 8 },
-        mx: { xs: 2, md: 4 },
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
-        <Typography variant="h6" component="h2" gutterBottom align="center">
-            Para acessar nossa plataforma crie sua conta:
-        </Typography>
-        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="name"
-              label="Nome Completo"
-              name="name"
-              autoComplete="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              disabled={loading}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email"
-              name="email"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={loading}
-            />
-            <TextField
-              margin="normal"
-              fullWidth
-              id="profession"
-              label="Profissão"
-              name="profession"
-              value={profession}
-              onChange={(e) => setProfession(e.target.value)}
-              disabled={loading}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="username"
-              label="Usuário"
-              name="username"
-              autoComplete="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              disabled={loading}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Senha"
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={loading}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="confirmPassword"
-              label="Repita sua senha"
-              type="password"
-              id="confirmPassword"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              disabled={loading}
-            />
-            {error && (
-            <Typography color="error" variant="body2" sx={{ mt: 1 }}>
-                {error}
-            </Typography>
-            )}
-            <Box sx={{ position: 'relative', mt: 2 }}>
-            <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                disabled={loading}
-            >
-                Cadastrar
-            </Button>
-            {loading && (
-                <CircularProgress
-                size={24}
-                sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    marginTop: '-12px',
-                    marginLeft: '-12px',
+    <AppBar position="static" sx={{ backgroundColor: '#4B830D' }}>
+      <Toolbar>
+        {isLoggedIn ? (
+          // --- APARÊNCIA QUANDO LOGADO ---
+          <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            {/* Ícone do Menu Hambúrguer para telas pequenas */}
+            <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+              <IconButton
+                size="large"
+                aria-label="menu de navegação"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleOpenNavMenu}
+                color="inherit"
+              >
+                <MenuIcon />
+              </IconButton>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorElNav}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
                 }}
-                />
-            )}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+                open={Boolean(anchorElNav)}
+                onClose={handleCloseNavMenu}
+                sx={{
+                  display: { xs: 'block', md: 'none' },
+                }}
+              >
+                {menuItems.map((item) => (
+                  <MenuItem key={item.text} onClick={(e) => handleNavClick(e, item.path)}>
+                    <Typography textAlign="center">{item.text}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
             </Box>
-        </Box>
-    </Box>
+            {/* Logo para telas pequenas e grandes */}
+            <Avatar
+              src={logoSrc}
+              alt="Nexus Logo"
+              sx={{ width: 35, height: 35, mr: 1, display: { xs: 'flex', md: 'flex' } }}
+            />
+            <Typography variant="h6" component="div" sx={{ whiteSpace: 'nowrap', display: { md: 'flex' } }}>
+              Nexus Ambiental
+            </Typography>
+            {/* MENU COMPLETO - VISÍVEL EM TELAS GRANDES */}
+
+            <Box sx={{ flex: 2, display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
+              {menuItems.map((item) => (
+                <Button
+                  key={item.text}
+                  onClick={(e) => handleNavClick(e, item.path)}
+                  color="inherit"
+                  sx={{
+                    margin: '0 10px',
+                    textTransform: 'none',
+                    fontSize: '1rem',
+                    '&:hover': {
+                      backgroundColor: 'rgba(255, 255, 255, 0.08)'
+                    }
+                  }}
+                >
+                  {item.text}
+                </Button>
+              ))}
+            </Box>
+
+            <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+              <Typography variant="body1" sx={{ mr: 2, display: { xs: 'none', sm: 'block' } }}>
+                Olá, Utilizador
+              </Typography>
+              <Button
+                color="inherit"
+                variant="outlined"
+                onClick={onLogout}
+                sx={{
+                  borderColor: 'rgba(255, 255, 255, 0.5)',
+                  '&:hover': {
+                    borderColor: 'white',
+                    backgroundColor: 'rgba(255, 255, 255, 0.08)'
+                  }
+                }}
+              >
+                Sair
+              </Button>
+            </Box>
+          </Box>
+        ) : (
+          // --- APARÊNCIA QUANDO DESLOGADO ---
+          <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Avatar
+              src={logoSrc}
+              alt="Nexus Logo"
+              sx={{ width: 35, height: 35, mr: 1, display: { xs: 'flex', md: 'flex' } }}
+            />
+            <Box component="form" onSubmit={handleSubmitLogin} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              {error && <Typography variant="caption" sx={{ color: 'error.main', mr: 2, backgroundColor: 'white', p: 0.5, borderRadius: 1 }}>{error}</Typography>}
+              <TextField
+                variant="outlined"
+                size="small"
+                label="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
+                sx={{
+                  '& .MuiInputBase-root': { backgroundColor: 'rgba(255,255,255,0.1)', color: 'white' },
+                  '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.5)' },
+                  '& .MuiInputLabel-root': { color: 'white' },
+                }}
+              />
+              <TextField
+                variant="outlined"
+                size="small"
+                type="password"
+                label="Senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+                sx={{
+                  '& .MuiInputBase-root': { backgroundColor: 'rgba(255,255,255,0.1)', color: 'white' },
+                  '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.5)' },
+                  '& .MuiInputLabel-root': { color: 'white' },
+                }}
+              />
+              <Box sx={{ position: 'relative' }}>
+                <Button
+                  type="submit"
+                  variant="outlined"
+                  color="inherit"
+                  disabled={loading}
+                  sx={{
+                    borderColor: 'rgba(255, 255, 255, 0.5)',
+                    '&:hover': {
+                      borderColor: 'white',
+                      backgroundColor: 'rgba(255, 255, 255, 0.08)'
+                    }
+                  }}
+                >
+                  Entrar
+                </Button>
+                {loading && <CircularProgress size={24} sx={{ position: 'absolute', top: '50%', left: '50%', mt: '-12px', ml: '-12px' }} />}
+              </Box>
+            </Box>
+          </Box>
+        )}
+      </Toolbar>
+    </AppBar>
   );
 };
 
-// --- Componente do Diálogo de Sucesso ---
-const SuccessDialog = ({ open, onClose }: { open: boolean; onClose: () => void }) => (
-  <Dialog open={open} onClose={onClose}>
-    <DialogTitle>Cadastro Realizado com Sucesso!</DialogTitle>
-    <DialogContent>
-      <DialogContentText>
-        Seu cadastro foi efetuado. Por favor, verifique seu e-mail para confirmar sua conta.
-      </DialogContentText>
-    </DialogContent>
-    <DialogActions>
-      <Button onClick={onClose} color="primary" autoFocus>
-        Ok
-      </Button>
-    </DialogActions>
-  </Dialog>
-);
-
-
-// --- Componente Principal da Página de Cadastro ---
-const CadastroPage: React.FC = () => {
-  const [dialogOpen, setDialogOpen] = useState(false);
-
-  const handleSignUpSuccess = () => {
-    setDialogOpen(true);
-  };
-
-  const handleCloseDialog = () => {
-    setDialogOpen(false);
-  };
-
-  return (
-    <ThemeProvider theme={theme}>
-        <Grid 
-            container 
-            component="main" 
-            sx={{ 
-                height: 'calc(100vh - 64px)', // Altura da tela menos o Header
-            }}
-        >
-            {/* Lado Esquerdo: Fundo Marrom com Descrição */}
-            <Grid 
-                item 
-                xs={12} 
-                md={6}
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    p: { xs: 2, sm: 4 },
-                    backgroundColor: '#654321',
-                    color: 'white',
-                }}
-            >
-                <Container maxWidth="sm">
-                    <Box sx={{ textAlign: 'center' }}>
-                        <Avatar 
-                            src={logoSrc} 
-                            alt="Nexus Ambiental Logo"
-                            sx={{ width: 100, height: 100, mx: 'auto', mb: 2 }}
-                        />
-                        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
-                        Bem vindo a plataforma Web
-                        </Typography>
-                        <Typography variant="body1" paragraph>
-                        A Nexus Ambiental é uma startup de tecnologia que desenvolve soluções SaaS para otimizar a gestão de ativos ambientais. Através de plataformas web e mobile integradas, a empresa substitui processos manuais por fluxos de trabalho digitais, fornecendo dados precisos para decisões estratégicas.
-                        </Typography>
-                        <Typography variant="h5" component="h2" gutterBottom sx={{ mt: 3, fontWeight: 'bold' }}>
-                        Principais Recursos
-                        </Typography>
-                        <Typography variant="body1" align="left" paragraph>
-                          <strong>Gerenciamento de Solicitações:</strong> Cadastro e importação em lote de pedidos de vistoria. <br/>
-                          <strong>Planejamento e Roteirização:</strong> Criação de rotas de trabalho otimizadas para as equipes. <br/>
-                          <strong>Execução de Vistoria Offline:</strong> Preenchimento de laudos em campo, sem necessidade de internet. <br/>
-                          <strong>Administração e Gestão:</strong> Painel web para gerenciar formulários e visualizar dashboards. <br/>
-                          <strong>Geração de Relatórios:</strong> Criação automática de laudos técnicos padronizados.
-                        </Typography>
-                    </Box>
-                </Container>
-            </Grid>
-            {/* Lado Direito: Formulário */}
-            <Grid 
-                item 
-                xs={12} 
-                md={6} 
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: 'background.paper' // Fundo bege
-                }}
-            >
-                <Container maxWidth="sm">
-                    <SignUpForm onSignUpSuccess={handleSignUpSuccess} />
-                </Container>
-            </Grid>
-        </Grid>
-        <SuccessDialog open={dialogOpen} onClose={handleCloseDialog} />
-    </ThemeProvider>
-  );
-};
-
-export default CadastroPage;
+export default Header;
