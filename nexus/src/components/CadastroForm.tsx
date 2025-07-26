@@ -6,33 +6,16 @@ import {
   TextField,
   Button,
   CircularProgress,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
 } from '@mui/material';
 import { registerUser } from '../api/register/Register';
 
-// --- Componente do Diálogo de Sucesso ---
-const SuccessDialog = ({ open, onClose }: { open: boolean; onClose: () => void }) => (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Cadastro Realizado com Sucesso!</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          Seu cadastro foi efetuado. Por favor, verifique seu e-mail para confirmar sua conta.
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="primary" autoFocus>
-          Ok
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
+// Define a interface para as props que o componente espera receber
+interface CadastroFormProps {
+    onSignUpSuccess: () => void;
+}
 
-// --- Componente do Formulário de Cadastro ---
-const CadastroForm: React.FC = () => {
+// O componente agora aceita a prop 'onSignUpSuccess'
+const CadastroForm: React.FC<CadastroFormProps> = ({ onSignUpSuccess }) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [profession, setProfession] = useState('');
@@ -41,16 +24,7 @@ const CadastroForm: React.FC = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const [dialogOpen, setDialogOpen] = useState(false);
   
-    const handleSignUpSuccess = () => {
-      setDialogOpen(true);
-    };
-  
-    const handleCloseDialog = () => {
-      setDialogOpen(false);
-    };
-
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       setError('');
@@ -67,7 +41,8 @@ const CadastroForm: React.FC = () => {
       setLoading(true);
       try {
         await registerUser(name, email, password);
-        handleSignUpSuccess();
+        // Chama a função de sucesso passada pelo componente pai (SobrePage)
+        onSignUpSuccess();
       } catch (err: any) {      
           setError(err.message || 'Ocorreu um erro no cadastro.');
       } finally {
@@ -76,7 +51,6 @@ const CadastroForm: React.FC = () => {
     };
   
     return (
-      <>
         <Container maxWidth="sm">
             <Box
             sx={{
@@ -192,8 +166,6 @@ const CadastroForm: React.FC = () => {
                 </Box>
             </Box>
         </Container>
-        <SuccessDialog open={dialogOpen} onClose={handleCloseDialog} />
-      </>
     );
   };
 

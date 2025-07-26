@@ -36,7 +36,6 @@ const SuccessDialog = ({ open, onClose }: { open: boolean; onClose: () => void }
 
 
 const SobrePage: React.FC = () => {
-    // Estado para gerenciar o diálogo de sucesso
     const [dialogOpen, setDialogOpen] = useState(false);
 
     const handleSignUpSuccess = () => {
