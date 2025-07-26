@@ -8,27 +8,14 @@ import {
   Chip,
   Typography,
 } from '@mui/material';
-import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { Edit as EditIcon, Delete as DeleteIcon, Attachment as AttachmentIcon } from '@mui/icons-material';
+import type { Solicitacao } from '../types';
 
-// Interface para definir a estrutura de uma solicitação
-// Exportada para que possa ser usada em outros arquivos, como na página de Solicitações
-export interface Solicitacao {
-  id: string;
-  prazo: number;
-  rua: string;
-  bairro: string;
-  descricao: string;
-  status: 'Aguardando Agendamento' | 'Agendado Vistoria' | 'Em Rota';
-  mapaUrl: string;
-}
-
-// Interface para as props do SolicitacaoCard
 interface SolicitacaoCardProps {
   solicitacao: Solicitacao;
   onRemove: (id: string) => void;
 }
 
-// Componente para o Card de Solicitação
 const SolicitacaoCard: React.FC<SolicitacaoCardProps> = ({ solicitacao, onRemove }) => {
   const getStatusColor = (status: Solicitacao['status']) => {
     switch (status) {
@@ -49,25 +36,25 @@ const SolicitacaoCard: React.FC<SolicitacaoCardProps> = ({ solicitacao, onRemove
         <Button variant="outlined" size="small" startIcon={<EditIcon />}>
           Editar
         </Button>
-        <Button
-          variant="outlined"
-          size="small"
-          color="error"
-          startIcon={<DeleteIcon />}
-          onClick={() => onRemove(solicitacao.id)}
-        >
+        <Button variant="outlined" size="small" color="error" startIcon={<DeleteIcon />} onClick={() => onRemove(solicitacao.id)}>
           Remover
         </Button>
       </Box>
-      <img
-        src={solicitacao.mapaUrl}
-        alt="Mapa da localização"
-        style={{ width: 150, height: 120, objectFit: 'cover', borderRadius: 4 }}
-      />
+      <img src={solicitacao.mapaUrl} alt="Mapa da localização" style={{ width: 150, height: 120, objectFit: 'cover', borderRadius: 4 }} />
       <CardContent sx={{ flex: 1 }}>
-        <Typography variant="body2" color="text.secondary">
-          Solicitação {solicitacao.id} • Prazo {solicitacao.prazo} dias
-        </Typography>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Typography variant="body2" color="text.secondary">
+            Solicitação {solicitacao.id} • Prazo {solicitacao.prazo} dias
+          </Typography>
+          {solicitacao.anexos && solicitacao.anexos.length > 0 && (
+            <Chip
+              icon={<AttachmentIcon />}
+              label={solicitacao.anexos.length}
+              size="small"
+              variant="outlined"
+            />
+          )}
+        </Box>
         <Typography variant="h6" component="div">
           {solicitacao.rua}, {solicitacao.bairro}
         </Typography>
@@ -76,10 +63,7 @@ const SolicitacaoCard: React.FC<SolicitacaoCardProps> = ({ solicitacao, onRemove
         </Typography>
       </CardContent>
       <CardActions sx={{ p: 2 }}>
-        <Chip
-          label={solicitacao.status}
-          color={getStatusColor(solicitacao.status)}
-        />
+        <Chip label={solicitacao.status} color={getStatusColor(solicitacao.status)} />
       </CardActions>
     </Card>
   );
