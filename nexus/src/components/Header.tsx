@@ -10,6 +10,7 @@ import {
   Menu,
   MenuItem,
   IconButton,
+  Avatar, // Adicione Avatar para usar como imagem
   // Adicione AdbIcon aqui
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu'; // Ícone para o menu hambúrguer
@@ -30,6 +31,8 @@ const menuItems = [
   { text: 'Relatórios', path: '/relatorios' },
   { text: 'Gerenciar', path: '/gerenciar' },
 ];
+
+const logoSrc = "/logo.png";
 
 const Header: React.FC<HeaderProps> = ({ isLoggedIn, onLoginSuccess, onLogout }) => {
   // Estados para controlar os campos de login
@@ -121,11 +124,18 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn, onLoginSuccess, onLogout })
                   </MenuItem>
                 ))}
               </Menu>
-            </Box> 
-<Typography variant="h6" component="div" sx={{ whiteSpace: 'nowrap', display: { md: 'flex' } }}>
+            </Box>
+            {/* Logo para telas pequenas e grandes */}
+            <Avatar
+              src={logoSrc}
+              alt="Nexus Logo"
+              sx={{ width: 35, height: 35, mr: 1, display: { xs: 'flex', md: 'flex' } }}
+            />
+            <Typography variant="h6" component="div" sx={{ whiteSpace: 'nowrap', display: { md: 'flex' } }}>
               Nexus Ambiental
             </Typography>
             {/* MENU COMPLETO - VISÍVEL EM TELAS GRANDES */}
+
             <Box sx={{ flex: 2, display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
               {menuItems.map((item) => (
                 <Button
@@ -169,9 +179,11 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn, onLoginSuccess, onLogout })
         ) : (
           // --- APARÊNCIA QUANDO DESLOGADO ---
           <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="h6" component="div" sx={{ whiteSpace: 'nowrap' }}>
-              Nexus Ambiental
-            </Typography>
+            <Avatar
+              src={logoSrc}
+              alt="Nexus Logo"
+              sx={{ width: 35, height: 35, mr: 1, display: { xs: 'flex', md: 'flex' } }}
+            />
             <Box component="form" onSubmit={handleSubmitLogin} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               {error && <Typography variant="caption" sx={{ color: 'error.main', mr: 2, backgroundColor: 'white', p: 0.5, borderRadius: 1 }}>{error}</Typography>}
               <TextField
