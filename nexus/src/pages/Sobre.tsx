@@ -48,13 +48,14 @@ const SobrePage: React.FC = () => {
 
   return (
     <>
-      <Grid container component="main" sx={{ height: 'calc(100vh - 64px)', backgroundColor: 'background.paper' }}>
+      <Grid container component="main" sx={{ height: 'calc(100vh - 64px)'}}>
           {/* Lado Esquerdo: Descrição da Empresa */}
           <Grid
               xs={12}
               md={6}
               sx={{
                   p: { xs: 2, sm: 4 },
+                  backgroundColor: 'background.paper'
               }}
           >
               <Paper
@@ -103,29 +104,27 @@ const SobrePage: React.FC = () => {
           <Grid
               xs={12}
               md={6}
-              sx={{// O fundo da área de cadastro é cinza claro
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+              sx={{
+                  p: { xs: 2, sm: 4 },
+                  backgroundColor: 'background.paper'
               }}
           >
-             <Paper
+              <Paper
                   elevation={6}
                   sx={{
                       p: { xs: 2, sm: 4 },
-                      backgroundColor: 'white',
-                      color: 'white',
+                      backgroundColor: '#F5F5F5',
                       borderRadius: 2,
                       width: '100%',
                       height: '100%',
                       display: 'flex',
                       flexDirection: 'column',
-                      justifyContent: 'center'
+                      justifyContent: 'center',
                   }}
               >
-              <Container maxWidth="sm">
-                  <CadastroForm onSignUpSuccess={handleSignUpSuccess} />
-              </Container>
+                  <Container maxWidth="sm">
+                      <CadastroForm onSignUpSuccess={handleSignUpSuccess} />
+                  </Container>
               </Paper>
           </Grid>
       </Grid>
