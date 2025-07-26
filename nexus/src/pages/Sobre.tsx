@@ -50,10 +50,9 @@ const SobrePage: React.FC = () => {
     <>
       <Grid container component="main" sx={{ height: 'calc(100vh - 64px)', backgroundColor: 'background.paper' }}>
           {/* Lado Esquerdo: Descrição da Empresa */}
-          <Grid
-              xs={12}
-              md={6}
+          <Grid // A sintaxe para o Grid foi alterada para ser compatível com as versões mais recentes do MUI
               sx={{
+                  gridColumn: { xs: '1 / -1', md: 'span 6' }, // Ocupa todas as colunas em telas pequenas (xs) e 6 colunas em telas médias (md)
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -103,10 +102,9 @@ const SobrePage: React.FC = () => {
           </Grid>
 
           {/* Lado Direito: Formulário de Cadastro */}
-          <Grid
-              xs={12}
-              md={6}
+          <Grid // A sintaxe para o Grid foi alterada para ser compatível com as versões mais recentes do MUI
               sx={{
+                  gridColumn: { xs: '1 / -1', md: 'span 6' }, // Ocupa todas as colunas em telas pequenas (xs) e 6 colunas em telas médias (md)
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
