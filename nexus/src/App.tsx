@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
-import { CssBaseline, ThemeProvider, Typography } from '@mui/material';
+import { CssBaseline, ThemeProvider } from '@mui/material';
+import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import theme from './styles/theme';
+import Dashboard from './pages/Dashboard';
+import Solicitacoes from './pages/Solicitacoes';
+import Rotas from './pages/Rotas';
+import Relatorios from './pages/Relatorios';
+import Gerenciar from './pages/Gerenciar';
+import SobrePage from './pages/Sobre';
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -17,17 +24,30 @@ const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Layout 
-        isLoggedIn={isLoggedIn} 
-        onLoginSuccess={handleLoginSuccess} 
+      <Layout
+        isLoggedIn={isLoggedIn}
+        onLoginSuccess={handleLoginSuccess}
         onLogout={handleLogout}
       >
-        <Typography variant="h4" component="h1" gutterBottom>
-          Bem-vindo ao Dashboard
-        </Typography>
-        <Typography paragraph>
-          Este é o espaço onde o conteúdo principal da sua aplicação será exibido.
-        </Typography>
+        <Routes>
+          {isLoggedIn ? (
+            <>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/solicitacoes" element={<Solicitacoes />} />
+              <Route path="/rotas" element={<Rotas />} />
+              <Route path="/relatorios" element={<Relatorios />} />
+              <Route path="/gerenciar" element={<Gerenciar />} />
+              <Route path="/sobre" element={<SobrePage />} />
+              {/* Rota padrão para / quando logado */}
+              <Route path="/" element={<Dashboard />} />
+            </>
+          ) : (
+            <>
+                {/* Quando deslogado, todas as rotas levam para a página Sobre, que agora tem o cadastro */}
+                <Route path="/*" element={<SobrePage />} />
+            </>
+          )}
+        </Routes>
       </Layout>
     </ThemeProvider>
   );
