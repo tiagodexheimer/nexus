@@ -66,7 +66,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn, onLoginSuccess, onLogout })
   };
   
   return (
-    <AppBar position="static" sx={{ backgroundColor: '#4B830D' }}>
+    <AppBar position="sticky" sx={{ backgroundColor: '#4B830D' }}>
       <Toolbar>
         {isLoggedIn ? (
           // --- APARÊNCIA QUANDO LOGADO ---
