@@ -51,7 +51,6 @@ const SobrePage: React.FC = () => {
       <Grid container component="main" sx={{ height: 'calc(100vh - 64px)', backgroundColor: 'background.paper' }}>
           {/* Lado Esquerdo: Descrição da Empresa */}
           <Grid
-              item
               xs={12}
               md={6}
               sx={{
@@ -105,7 +104,6 @@ const SobrePage: React.FC = () => {
 
           {/* Lado Direito: Formulário de Cadastro */}
           <Grid
-              item
               xs={12}
               md={6}
               sx={{
