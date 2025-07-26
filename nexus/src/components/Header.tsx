@@ -10,6 +10,7 @@ import {
   Menu,
   MenuItem,
   IconButton,
+  // Adicione AdbIcon aqui
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu'; // Ícone para o menu hambúrguer
 import { Login } from '../api/login/Login'; // Importa a lógica da API
@@ -68,7 +69,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn, onLoginSuccess, onLogout })
       setLoading(false);
     }
   };
-  
+
   const handleNavClick = (e: React.MouseEvent<HTMLElement>, path: string) => {
     e.preventDefault();
     // No futuro, quando tiver rotas, a lógica de navegação virá aqui.
@@ -120,22 +121,20 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn, onLoginSuccess, onLogout })
                   </MenuItem>
                 ))}
               </Menu>
-            </Box>
-
-            <Typography variant="h6" component="div" sx={{ whiteSpace: 'nowrap', display: { xs: 'none', md: 'flex' } }}>
+            </Box> 
+<Typography variant="h6" component="div" sx={{ whiteSpace: 'nowrap', display: { md: 'flex' } }}>
               Nexus Ambiental
             </Typography>
-
-            {/* Menu completo para telas grandes */}
+            {/* MENU COMPLETO - VISÍVEL EM TELAS GRANDES */}
             <Box sx={{ flex: 2, display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
               {menuItems.map((item) => (
-                <Button 
-                  key={item.text} 
+                <Button
+                  key={item.text}
                   onClick={(e) => handleNavClick(e, item.path)}
-                  color="inherit" 
-                  sx={{ 
-                    margin: '0 10px', 
-                    textTransform: 'none', 
+                  color="inherit"
+                  sx={{
+                    margin: '0 10px',
+                    textTransform: 'none',
                     fontSize: '1rem',
                     '&:hover': {
                       backgroundColor: 'rgba(255, 255, 255, 0.08)'
@@ -146,14 +145,14 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn, onLoginSuccess, onLogout })
                 </Button>
               ))}
             </Box>
-            
+
             <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
               <Typography variant="body1" sx={{ mr: 2, display: { xs: 'none', sm: 'block' } }}>
                 Olá, Utilizador
               </Typography>
-              <Button 
-                color="inherit" 
-                variant="outlined" 
+              <Button
+                color="inherit"
+                variant="outlined"
                 onClick={onLogout}
                 sx={{
                   borderColor: 'rgba(255, 255, 255, 0.5)',
@@ -203,10 +202,10 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn, onLoginSuccess, onLogout })
                 }}
               />
               <Box sx={{ position: 'relative' }}>
-                <Button 
-                  type="submit" 
-                  variant="outlined" 
-                  color="inherit" 
+                <Button
+                  type="submit"
+                  variant="outlined"
+                  color="inherit"
                   disabled={loading}
                   sx={{
                     borderColor: 'rgba(255, 255, 255, 0.5)',
