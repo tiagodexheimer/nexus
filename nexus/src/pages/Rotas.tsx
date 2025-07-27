@@ -22,9 +22,13 @@ import {
   DialogTitle,
   DialogContent,
   IconButton,
+  DialogActions,
 } from '@mui/material';
-import { Place as PlaceIcon, Edit as EditIcon, Delete as DeleteIcon, Close as CloseIcon } from '@mui/icons-material';
-import MapaRotaExemplo from '../assets/mapa-rota-exemplo.png'; // Assumindo que a imagem está na pasta assets
+import { Place as PlaceIcon, Edit as EditIcon, Delete as DeleteIcon, Close as CloseIcon, DragIndicator as DragIndicatorIcon } from '@mui/icons-material';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import MapaRotaExemplo from '../assets/mapa-rota-exemplo.png'; // Referenciando a imagem local
 
 // --- Tipos e Dados Mockados ---
 
@@ -42,6 +46,7 @@ interface Rota {
   status: 'Planejada' | 'Em andamento' | 'Concluída';
   solicitacoes: SolicitacaoResumo[];
   mapaUrl: string;
+  mapaUrlDetalhe: string;
 }
 
 const mockRotas: Rota[] = [
@@ -58,6 +63,7 @@ const mockRotas: Rota[] = [
       { id: 'SOL-016', endereco: 'Rua Dom João Becker, 754', prazo: 7 },
     ],
     mapaUrl: MapaRotaExemplo,
+    mapaUrlDetalhe: MapaRotaExemplo,
   },
   {
     id: 'ROTA-02',
@@ -71,6 +77,7 @@ const mockRotas: Rota[] = [
       { id: 'SOL-015', endereco: 'Rua Padre Anchieta, 205', prazo: 2 },
     ],
     mapaUrl: MapaRotaExemplo,
+    mapaUrlDetalhe: MapaRotaExemplo,
   },
   {
     id: 'ROTA-03',
@@ -83,6 +90,7 @@ const mockRotas: Rota[] = [
       { id: 'SOL-009', endereco: 'Rua Bento Gonçalves, 1500', prazo: 6 },
     ],
     mapaUrl: MapaRotaExemplo,
+    mapaUrlDetalhe: MapaRotaExemplo,
   },
 ];
 
@@ -97,10 +105,20 @@ const getStatusChipColor = (status: Rota['status']) => {
 
 // --- Componente do Card de Rota ---
 
-const RotaCard: React.FC<{ rota: Rota, onClick: () => void }> = ({ rota, onClick }) => {
+const RotaCard: React.FC<{ rota: Rota, onClick: () => void, onEdit: () => void, onRemove: () => void }> = ({ rota, onClick, onEdit, onRemove }) => {
     const menorPrazo = rota.solicitacoes.length > 0
         ? Math.min(...rota.solicitacoes.map(s => s.prazo))
         : null;
+
+    const handleEditClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onEdit();
+    };
+
+    const handleRemoveClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onRemove();
+    };
 
     return (
         <Card elevation={3} sx={{ display: 'flex' }}>
@@ -120,7 +138,7 @@ const RotaCard: React.FC<{ rota: Rota, onClick: () => void }> = ({ rota, onClick
                     color="success"
                     sx={{ minWidth: '100px' }}
                     startIcon={<EditIcon />}
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={handleEditClick}
                 >
                     Editar
                 </Button>
@@ -130,65 +148,70 @@ const RotaCard: React.FC<{ rota: Rota, onClick: () => void }> = ({ rota, onClick
                     color="error"
                     sx={{ minWidth: '100px' }}
                     startIcon={<DeleteIcon />}
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={handleRemoveClick}
                 >
                     Remover
                 </Button>
             </Stack>
-            <Box sx={{ display: 'flex', flexGrow: 1, cursor: 'pointer', p: 2, gap: 2 }} onClick={onClick}>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Box sx={{ flexGrow: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', p: 2, gap: 2 }} onClick={onClick}>
+                <Stack spacing={1} sx={{ flexShrink: 0, alignItems: 'center' }}>
+                    <Stack 
+                        direction="row" 
+                        spacing={1} 
+                        justifyContent="center"
+                        sx={{ width: '250px' }}
+                    >
+                        <Chip label={rota.status} color={getStatusChipColor(rota.status)} size="small" />
+                        {menorPrazo !== null && (
+                            <Box sx={{
+                                backgroundColor: (theme) => theme.palette.success.main,
+                                color: (theme) => theme.palette.success.contrastText,
+                                px: 1,
+                                py: 0.2,
+                                borderRadius: 1,
+                                textAlign: 'center'
+                            }}>
+                                <Typography variant="caption" sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+                                    Prazo: {menorPrazo} dia(s)
+                                </Typography>
+                            </Box>
+                        )}
+                    </Stack>
                     <img
                         src={rota.mapaUrl}
                         alt={`Mapa da Rota ${rota.nome}`}
                         style={{
-                            width: '200px',
+                            width: '250px',
                             height: '150px',
                             objectFit: 'cover',
                             borderRadius: '8px'
                         }}
                     />
-                </Box>
+                </Stack>
                 <Box sx={{ flexGrow: 1 }}>
-                    <CardContent sx={{ p: '0 !important' }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                            <Box>
-                                <Typography variant="h6" component="div">
-                                    {rota.nome}
-                                </Typography>
-                                <Typography color="text.secondary">
-                                    Criada em: {new Date(rota.dataCriacao).toLocaleDateString()} • Agente: {rota.agente}
-                                </Typography>
-                            </Box>
-                            <Stack direction="column" spacing={1} alignItems="flex-end">
-                                <Chip label={rota.status} color={getStatusChipColor(rota.status)} />
-                                {menorPrazo !== null && (
-                                    <Box sx={{
-                                        backgroundColor: (theme) => theme.palette.success.main,
-                                        color: (theme) => theme.palette.success.contrastText,
-                                        px: 1.5,
-                                        py: 0.5,
-                                        borderRadius: 1,
-                                        textAlign: 'center'
-                                    }}>
-                                        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                                            Prazo expira em: {menorPrazo} dia(s)
-                                        </Typography>
-                                    </Box>
-                                )}
-                            </Stack>
+                    <CardContent sx={{ p: '0 !important', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                        <Box>
+                            <Typography variant="h6" component="div">
+                                {rota.nome}
+                            </Typography>
+                            <Typography color="text.secondary">
+                                Criada em: {new Date(rota.dataCriacao).toLocaleDateString()} • Agente: {rota.agente}
+                            </Typography>
                         </Box>
                         <Divider sx={{ my: 1 }} />
-                        <Typography sx={{ mb: 1 }}>Resumo de Endereços ({rota.solicitacoes.length}):</Typography>
-                        <List dense sx={{ maxHeight: 100, overflow: 'auto', p: 0 }}>
-                            {rota.solicitacoes.map((sol) => (
-                            <ListItem key={sol.id} disablePadding>
-                                <ListItemIcon sx={{ minWidth: 32 }}>
-                                <PlaceIcon fontSize="small" color="primary" />
-                                </ListItemIcon>
-                                <ListItemText primary={`${sol.id} - ${sol.endereco}`} />
-                            </ListItem>
-                            ))}
-                        </List>
+                        <Box sx={{ flexGrow: 1 }}>
+                            <Typography sx={{ mb: 1 }}>Resumo de Endereços ({rota.solicitacoes.length}):</Typography>
+                            <List dense sx={{ maxHeight: 100, overflow: 'auto', p: 0 }}>
+                                {rota.solicitacoes.map((sol) => (
+                                <ListItem key={sol.id} disablePadding>
+                                    <ListItemIcon sx={{ minWidth: 32 }}>
+                                    <PlaceIcon fontSize="small" color="primary" />
+                                    </ListItemIcon>
+                                    <ListItemText primary={`${sol.id} - ${sol.endereco}`} />
+                                </ListItem>
+                                ))}
+                            </List>
+                        </Box>
                     </CardContent>
                 </Box>
             </Box>
@@ -205,7 +228,7 @@ const DetalheRotaDialog: React.FC<{
   if (!rota) return null;
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <DialogTitle>
         Detalhes da Rota
         <IconButton onClick={onClose} sx={{ position: 'absolute', right: 8, top: 8, color: (theme) => theme.palette.grey[500] }}>
@@ -213,6 +236,13 @@ const DetalheRotaDialog: React.FC<{
         </IconButton>
       </DialogTitle>
       <DialogContent dividers>
+        <Box sx={{ mb: 2, maxHeight: '400px', overflow: 'hidden', borderRadius: '8px' }}>
+            <img 
+                src={rota.mapaUrlDetalhe} 
+                alt={`Mapa da Rota ${rota.nome}`}
+                style={{ width: '100%', height: 'auto', display: 'block' }} 
+            />
+        </Box>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
             <Box>
                 <Typography variant="h5">{rota.nome}</Typography>
@@ -225,11 +255,13 @@ const DetalheRotaDialog: React.FC<{
         <Typography variant="h6" gutterBottom>Endereços da Rota ({rota.solicitacoes.length})</Typography>
         <List>
             {rota.solicitacoes.map((sol) => (
-                <ListItem key={sol.id}>
+                <ListItem key={sol.id} secondaryAction={
+                    <Chip label={`Prazo: ${sol.prazo} dia(s)`} color="warning" size="small" />
+                }>
                     <ListItemIcon>
                         <PlaceIcon color="primary" />
                     </ListItemIcon>
-                    <ListItemText primary={`${sol.id} - ${sol.endereco}`} secondary={`Prazo: ${sol.prazo} dia(s)`} />
+                    <ListItemText primary={`${sol.id} - ${sol.endereco}`} />
                 </ListItem>
             ))}
         </List>
@@ -238,14 +270,153 @@ const DetalheRotaDialog: React.FC<{
   );
 };
 
+// --- Componente para Item Arrastável ---
+const SortableItem: React.FC<{solicitacao: SolicitacaoResumo, onRemove: (id: string) => void}> = ({solicitacao, onRemove}) => {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+    } = useSortable({id: solicitacao.id});
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
+
+    return (
+        <ListItem
+            ref={setNodeRef}
+            style={style}
+            secondaryAction={
+                <IconButton edge="end" onClick={() => onRemove(solicitacao.id)}>
+                    <DeleteIcon color="error" />
+                </IconButton>
+            }
+        >
+            <ListItemIcon sx={{ minWidth: 40, cursor: 'grab' }} {...attributes} {...listeners}>
+                <DragIndicatorIcon />
+            </ListItemIcon>
+            <ListItemText primary={solicitacao.endereco} secondary={solicitacao.id} />
+        </ListItem>
+    );
+}
+
+// --- Componente do Dialog de Edição de Rota ---
+const EditarRotaDialog: React.FC<{
+  rota: Rota | null;
+  open: boolean;
+  onClose: () => void;
+  onSave: (rota: Rota) => void;
+}> = ({ rota, open, onClose, onSave }) => {
+    const [nome, setNome] = useState(rota?.nome || '');
+    const [agente, setAgente] = useState(rota?.agente || '');
+    const [status, setStatus] = useState(rota?.status || 'Planejada');
+    const [solicitacoes, setSolicitacoes] = useState<SolicitacaoResumo[]>(rota?.solicitacoes || []);
+
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+          coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
+
+    React.useEffect(() => {
+        if (rota) {
+            setNome(rota.nome);
+            setAgente(rota.agente);
+            setStatus(rota.status);
+            setSolicitacoes(rota.solicitacoes);
+        }
+    }, [rota]);
+
+    const handleSave = () => {
+        if (rota) {
+            onSave({ ...rota, nome, agente, status, solicitacoes });
+        }
+    };
+    
+    const handleDragEnd = (event: DragEndEvent) => {
+        const {active, over} = event;
+        if (over && active.id !== over.id) {
+          setSolicitacoes((items) => {
+            const oldIndex = items.findIndex(item => item.id === active.id);
+            const newIndex = items.findIndex(item => item.id === over.id);
+            return arrayMove(items, oldIndex, newIndex);
+          });
+        }
+    };
+
+    const handleRemoveSolicitacao = (id: string) => {
+        setSolicitacoes(prev => prev.filter(s => s.id !== id));
+    };
+
+    if (!rota) return null;
+
+    return (
+        <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+            <DialogTitle>Editar Rota</DialogTitle>
+            <DialogContent>
+                <TextField autoFocus margin="dense" label="Nome da Rota" type="text" fullWidth variant="outlined" value={nome} onChange={(e) => setNome(e.target.value)} sx={{ mt: 2 }} />
+                <TextField margin="dense" label="Agente Responsável" type="text" fullWidth variant="outlined" value={agente} onChange={(e) => setAgente(e.target.value)} />
+                <FormControl fullWidth margin="dense">
+                    <InputLabel>Status</InputLabel>
+                    <Select value={status} label="Status" onChange={(e) => setStatus(e.target.value as Rota['status'])}>
+                        <MenuItem value="Planejada">Planejada</MenuItem>
+                        <MenuItem value="Em andamento">Em andamento</MenuItem>
+                        <MenuItem value="Concluída">Concluída</MenuItem>
+                    </Select>
+                </FormControl>
+                <Divider sx={{ my: 2 }} />
+                <Typography variant="h6" gutterBottom>Solicitações na Rota</Typography>
+                <DndContext 
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                >
+                    <SortableContext 
+                        items={solicitacoes}
+                        strategy={verticalListSortingStrategy}
+                    >
+                        <List>
+                            {solicitacoes.map((sol) => (
+                                <SortableItem key={sol.id} solicitacao={sol} onRemove={handleRemoveSolicitacao} />
+                            ))}
+                        </List>
+                    </SortableContext>
+                </DndContext>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={onClose}>Cancelar</Button>
+                <Button onClick={handleSave} variant="contained">Salvar</Button>
+            </DialogActions>
+        </Dialog>
+    );
+};
+
 
 // --- Componente Principal da Página de Rotas ---
 
 const Rotas: React.FC = () => {
-  const [rotas] = useState<Rota[]>(mockRotas);
+  const [rotas, setRotas] = useState<Rota[]>(mockRotas);
   const [filtro, setFiltro] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [rotaEmDetalhe, setRotaEmDetalhe] = useState<Rota | null>(null);
+  const [rotaEmEdicao, setRotaEmEdicao] = useState<Rota | null>(null);
+
+  const handleRemoverRota = (id: string) => {
+    setRotas(prev => prev.filter(r => r.id !== id));
+  };
+
+  const handleAbrirEditarDialog = (rota: Rota) => {
+    setRotaEmEdicao(rota);
+  };
+
+  const handleSalvarEdicao = (rotaEditada: Rota) => {
+    setRotas(prev => prev.map(r => (r.id === rotaEditada.id ? rotaEditada : r)));
+    setRotaEmEdicao(null);
+  };
 
   const rotasFiltradas = rotas.filter(
     (r) =>
@@ -288,7 +459,13 @@ const Rotas: React.FC = () => {
       <Stack spacing={3}>
         {rotasFiltradas.length > 0 ? (
           rotasFiltradas.map((rota) => (
-            <RotaCard key={rota.id} rota={rota} onClick={() => handleCardClick(rota)} />
+            <RotaCard 
+                key={rota.id} 
+                rota={rota} 
+                onClick={() => handleCardClick(rota)}
+                onEdit={() => handleAbrirEditarDialog(rota)}
+                onRemove={() => handleRemoverRota(rota.id)}
+            />
           ))
         ) : (
           <Typography sx={{ textAlign: 'center', mt: 4 }}>Nenhuma rota encontrada.</Typography>
@@ -299,6 +476,12 @@ const Rotas: React.FC = () => {
         open={!!rotaEmDetalhe}
         onClose={() => setRotaEmDetalhe(null)}
         rota={rotaEmDetalhe}
+      />
+      <EditarRotaDialog
+        open={!!rotaEmEdicao}
+        onClose={() => setRotaEmEdicao(null)}
+        onSave={handleSalvarEdicao}
+        rota={rotaEmEdicao}
       />
     </Box>
   );
