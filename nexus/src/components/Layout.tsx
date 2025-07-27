@@ -16,10 +16,10 @@ const Layout: React.FC<LayoutProps> = ({ children, isLoggedIn, onLoginSuccess, o
     <>
       <CssBaseline />
       <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        <Header 
-          isLoggedIn={isLoggedIn} 
-          onLoginSuccess={onLoginSuccess} 
-          onLogout={onLogout} 
+        <Header
+          isLoggedIn={isLoggedIn}
+          onLoginSuccess={onLoginSuccess}
+          onLogout={onLogout}
         />
         <Box sx={{ display: 'flex', flexGrow: 1 }}>
           {isLoggedIn && <Sidebar />} {/* Mostra a Sidebar somente se logado */}
