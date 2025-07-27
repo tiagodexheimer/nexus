@@ -1,6 +1,7 @@
+// nexus/src/App.tsx
 import React, { useState } from 'react';
 import { CssBaseline, ThemeProvider } from '@mui/material';
-import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import theme from './styles/theme';
 import Dashboard from './pages/Dashboard';
@@ -9,29 +10,24 @@ import Rotas from './pages/Rotas';
 import Relatorios from './pages/Relatorios';
 import Gerenciar from './pages/Gerenciar';
 import SobrePage from './pages/Sobre';
+// Importe os novos componentes
+import GerenciarEspecies from './pages/gerenciar/GerenciarEspecies';
+import GerenciarFormularios from './pages/gerenciar/GerenciarFormularios';
+import GerenciarRotas from './pages/gerenciar/GerenciarRotas';
+import GerenciarStatus from './pages/gerenciar/GerenciarStatus';
+import GerenciarTiposVistoria from './pages/gerenciar/GerenciarTiposVistoria';
+import GerenciarUsuarios from './pages/gerenciar/GerenciarUsuarios';
+
 
 const App: React.FC = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
-    // Inicializa o estado de login a partir do localStorage.
-    // Isso garante que o estado persista mesmo após recarregar a página.
-    return localStorage.getItem('isLoggedIn') === 'true';
-  });
-  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const handleLoginSuccess = () => {
-    // Salva o estado de login no localStorage para persistência
-    localStorage.setItem('isLoggedIn', 'true');
     setIsLoggedIn(true);
-    // Redireciona para o dashboard após o login bem-sucedido
-    navigate('/dashboard');
   };
 
   const handleLogout = () => {
-    // Remove o estado de login do localStorage
-    localStorage.removeItem('isLoggedIn');
     setIsLoggedIn(false);
-    // Redireciona para a página inicial (página de "Sobre")
-    navigate('/');
   };
 
   return (
@@ -45,22 +41,26 @@ const App: React.FC = () => {
         <Routes>
           {isLoggedIn ? (
             <>
-              {/* Rotas acessíveis apenas quando o usuário está logado */}
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/solicitacoes" element={<Solicitacoes />} />
               <Route path="/rotas" element={<Rotas />} />
               <Route path="/relatorios" element={<Relatorios />} />
               <Route path="/gerenciar" element={<Gerenciar />} />
+              {/* Adicione as novas rotas de gerenciamento aqui */}
+              <Route path="/gerenciar/especies" element={<GerenciarEspecies />} />
+              <Route path="/gerenciar/formularios" element={<GerenciarFormularios />} />
+              <Route path="/gerenciar/rotas" element={<GerenciarRotas />} />
+              <Route path="/gerenciar/status" element={<GerenciarStatus />} />
+              <Route path="/gerenciar/tipos-vistoria" element={<GerenciarTiposVistoria />} />
+              <Route path="/gerenciar/usuarios" element={<GerenciarUsuarios />} />
               <Route path="/sobre" element={<SobrePage />} />
-              {/* Redireciona a rota raiz para o dashboard */}
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              {/* Redireciona qualquer outra rota não encontrada para o dashboard */}
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              {/* Rota padrão para / quando logado */}
+              <Route path="/" element={<Dashboard />} />
             </>
           ) : (
             <>
-              {/* Quando deslogado, qualquer rota leva para a página Sobre/Cadastro */}
-              <Route path="/*" element={<SobrePage />} />
+                {/* Quando deslogado, todas as rotas levam para a página Sobre, que agora tem o cadastro */}
+                <Route path="/*" element={<SobrePage />} />
             </>
           )}
         </Routes>
