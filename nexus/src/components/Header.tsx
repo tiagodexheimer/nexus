@@ -1,4 +1,4 @@
-import React, { useState, type JSX } from 'react';
+import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import {
   AppBar,
@@ -32,7 +32,7 @@ const menuItems = [
 
 const logoSrc = "/logo.png";
 
-const Header = ({ isLoggedIn, onLoginSuccess, onLogout, onDrawerToggle, drawerWidth = 0 }: HeaderProps): JSX.Element => {
+const Header = ({ isLoggedIn, onLoginSuccess, onLogout, onDrawerToggle, drawerWidth = 0 }: HeaderProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
