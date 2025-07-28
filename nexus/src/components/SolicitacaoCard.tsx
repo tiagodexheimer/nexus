@@ -7,40 +7,49 @@ import {
   CardContent,
   Chip,
   Typography,
+  Checkbox,
 } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon, Attachment as AttachmentIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
-import type { Solicitacao } from '../types'; //
+import type { Solicitacao } from '../types';
 
-// Interface de props atualizada para incluir onVerDetalhes
 interface SolicitacaoCardProps {
   solicitacao: Solicitacao;
   onRemove: (id: string) => void;
   onVerDetalhes: (id: string) => void;
+  isSelected: boolean;
+  onSelect: (id: string) => void;
 }
 
-const SolicitacaoCard: React.FC<SolicitacaoCardProps> = ({ solicitacao, onRemove, onVerDetalhes }) => {
-  const getStatusColor = (status: Solicitacao['status']) => {
+const SolicitacaoCard: React.FC<SolicitacaoCardProps> = ({ solicitacao, onRemove, onVerDetalhes, isSelected, onSelect }) => {
+  
+  // Função para obter a cor do chip com base no status
+  const getStatusChipProps = (status: Solicitacao['status']) => {
     switch (status) {
-      case 'Aguardando Agendamento':
-        return 'warning';
-      case 'Agendado Vistoria':
-        return 'info';
-      case 'Em Rota':
-        return 'success';
+      case 'Sem rota':
+        return { label: 'Sem Rota', sx: { backgroundColor: '#9e9e9e', color: 'white' } }; // Cinza
+      case 'Aguardando agendamento':
+        return { label: 'Aguardando Agendamento', sx: { backgroundColor: '#9c27b0', color: 'white' } }; // Roxo
+      case 'Agendado':
+        return { label: 'Agendado', sx: { backgroundColor: '#2196f3', color: 'white' } }; // Azul
+      case 'Em rota':
+        return { label: 'Em Rota', color: 'warning' as 'warning' }; // Amarelo
+      case 'Concluído':
+        return { label: 'Concluído', color: 'success' as 'success' }; // Verde
       default:
-        return 'default';
+        return { label: status, color: 'default' as 'default' };
     }
   };
 
   return (
     <Card sx={{ display: 'flex', mb: 2, alignItems: 'center' }}>
-      <Box sx={{ p: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-        {/* Botão "Ver Detalhes" adicionado */}
+       <Box sx={{ p: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+        <Checkbox
+            checked={isSelected}
+            onChange={() => onSelect(solicitacao.id)}
+            inputProps={{ 'aria-label': 'Selecionar solicitação' }}
+        />
         <Button variant="outlined" size="small" startIcon={<VisibilityIcon />} onClick={() => onVerDetalhes(solicitacao.id)}>
           Detalhes
-        </Button>
-        <Button variant="outlined" size="small" startIcon={<EditIcon />}>
-          Editar
         </Button>
         <Button variant="outlined" size="small" color="error" startIcon={<DeleteIcon />} onClick={() => onRemove(solicitacao.id)}>
           Remover
@@ -69,7 +78,7 @@ const SolicitacaoCard: React.FC<SolicitacaoCardProps> = ({ solicitacao, onRemove
         </Typography>
       </CardContent>
       <CardActions sx={{ p: 2 }}>
-        <Chip label={solicitacao.status} color={getStatusColor(solicitacao.status)} />
+        <Chip {...getStatusChipProps(solicitacao.status)} />
       </CardActions>
     </Card>
   );
