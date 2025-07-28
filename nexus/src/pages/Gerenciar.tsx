@@ -24,7 +24,6 @@ const managementOptions = [
   {
     title: 'Tipos de Vistorias',
     description: 'Defina os diferentes tipos de vistorias disponíveis.',
-    // CORREÇÃO: O caminho foi ajustado para o correto.
     path: '/gerenciar/tipos-vistoria',
     icon: <RuleFolderIcon sx={{ fontSize: 40 }} />,
   },
@@ -58,8 +57,7 @@ const Gerenciar: React.FC = () => (
     </Typography>
     <Grid container spacing={4}>
       {managementOptions.map((option) => (
-        // CORREÇÃO: Removida a propriedade 'item'
-        <Grid xs={12} sm={6} md={4} key={option.title}>
+        <Grid item xs={12} sm={6} md={4} key={option.title}>
           <Card sx={{ height: '100%' }}>
             <CardActionArea component={RouterLink} to={option.path} sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
               <CardContent sx={{ textAlign: 'center' }}>
