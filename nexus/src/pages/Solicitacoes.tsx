@@ -1,3 +1,5 @@
+// src/pages/Solicitacoes.tsx
+
 import React, { useState } from 'react';
 import {
   Box,
@@ -18,7 +20,7 @@ import DetalhesSolicitacaoDialog from '../components/DetalhesSolicitacaoDialog';
 import type { Solicitacao } from '../types';
 import mapaExemplo from '../assets/mapa-exemplo.jpg';
 
-// Dados mockados iniciais expandidos para 20 exemplos
+// Dados mockados com os status corrigidos
 const initialSolicitacoes: Solicitacao[] = [
     { id: 'SOL-001', prazo: 5, rua: 'Rua das Flores, 123', bairro: 'Centro', descricao: 'Poda de árvore alta com risco de queda sobre a via.', status: 'Sem rota', mapaUrl: mapaExemplo, anexos: [] },
     { id: 'SOL-002', prazo: 2, rua: 'Av. Brasil, 1250', bairro: 'Jardim América', descricao: 'Remoção de galhos caídos após tempestade.', status: 'Aguardando agendamento', mapaUrl: mapaExemplo, anexos: [] },
@@ -41,7 +43,6 @@ const initialSolicitacoes: Solicitacao[] = [
     { id: 'SOL-019', prazo: 5, rua: 'Av. Padre Cacique, 891', bairro: 'Praia de Belas', descricao: 'Poda para desobstrução de sinalização.', status: 'Em Rota', mapaUrl: mapaExemplo, anexos: [] },
     { id: 'SOL-020', prazo: 10, rua: 'Rua Goethe, 200', bairro: 'Rio Branco', descricao: 'Análise de solo e adubação.', status: 'Concluído', mapaUrl: mapaExemplo, anexos: [] },
 ];
-
 
 const Solicitacoes: React.FC = () => {
   const [solicitacoes, setSolicitacoes] = useState<Solicitacao[]>(initialSolicitacoes);
@@ -87,12 +88,12 @@ const Solicitacoes: React.FC = () => {
     setSolicitacaoParaEditar(solicitacao);
     setEditarDialogOpen(true);
   };
-
+  
   const handleCloseEditarDialog = () => {
     setEditarDialogOpen(false);
     setSolicitacaoParaEditar(null);
   };
-
+  
   const handleSaveEdicao = (solicitacaoEditada: Solicitacao) => {
     setSolicitacoes(prev => 
       prev.map(s => s.id === solicitacaoEditada.id ? solicitacaoEditada : s)
@@ -101,12 +102,12 @@ const Solicitacoes: React.FC = () => {
     setConfirmacaoMessage(`Solicitação ${solicitacaoEditada.id} atualizada com sucesso.`);
     setConfirmacaoDialogOpen(true);
   };
-
+  
   const handleOpenDetalhesDialog = (solicitacao: Solicitacao) => {
     setSolicitacaoParaVer(solicitacao);
     setDetalhesDialogOpen(true);
   };
-
+  
   const handleCloseDetalhesDialog = () => {
     setDetalhesDialogOpen(false);
     setSolicitacaoParaVer(null);
@@ -164,8 +165,8 @@ const Solicitacoes: React.FC = () => {
             key={solicitacao.id}
             solicitacao={solicitacao}
             onRemove={handleRemoveSolicitacao}
-            onEditar={handleOpenEditarDialog}
-            onVerDetalhes={handleOpenDetalhesDialog}
+            onEditar={() => handleOpenEditarDialog(solicitacao)}
+            onVerDetalhes={() => handleOpenDetalhesDialog(solicitacao)}
             isSelected={selectedSolicitacoes.includes(solicitacao.id)}
             onSelect={handleSelectSolicitacao}
           />
@@ -184,6 +185,7 @@ const Solicitacoes: React.FC = () => {
 
   return (
     <Box>
+      {/* SEÇÃO DO TÍTULO E BOTÕES DE AÇÃO - CORRIGIDA */}
       <Box sx={{ 
         display: 'flex', 
         flexDirection: { xs: 'column', md: 'row' }, 
@@ -211,6 +213,7 @@ const Solicitacoes: React.FC = () => {
         </Box>
       </Box>
       
+      {/* BARRA DE BUSCA */}
       <Box sx={{ my: 2 }}>
         <TextField
           fullWidth
@@ -228,6 +231,7 @@ const Solicitacoes: React.FC = () => {
         />
       </Box>
 
+      {/* ABAS DE STATUS */}
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={tabIndex} onChange={handleTabChange} aria-label="abas de status de solicitações" variant="scrollable" scrollButtons="auto">
           {tabsContent.map((tab, index) => (
@@ -236,6 +240,7 @@ const Solicitacoes: React.FC = () => {
         </Tabs>
       </Box>
       
+      {/* CONTEÚDO DAS ABAS */}
       {tabsContent.map((tab, index) => (
         tabIndex === index && (
           <Box key={index} sx={{ py: 2 }}>
@@ -244,33 +249,30 @@ const Solicitacoes: React.FC = () => {
         )
       ))}
 
+      {/* DIÁLOGOS */}
       <NovaSolicitacaoDialog
         open={novaSolicitacaoDialogOpen}
         onClose={handleCloseNovaSolicitacaoDialog}
         onSave={handleSaveSolicitacao}
       />
-
       <CriarRotaDialog
         open={criarRotaDialogOpen}
         onClose={() => setCriarRotaDialogOpen(false)}
         onSave={handleSaveRota}
         solicitacoesCount={selectedSolicitacoes.length}
       />
-
       <ConfirmacaoDialog
         open={confirmacaoDialogOpen}
         onClose={handleCloseConfirmacaoDialog}
         title="Sucesso!"
         message={confirmacaoMessage}
       />
-
       <EditarSolicitacaoDialog
         open={editarDialogOpen}
         onClose={handleCloseEditarDialog}
         solicitacao={solicitacaoParaEditar}
         onSave={handleSaveEdicao}
       />
-
       <DetalhesSolicitacaoDialog
         open={detalhesDialogOpen}
         onClose={handleCloseDetalhesDialog}
