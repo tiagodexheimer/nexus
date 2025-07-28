@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Box, CssBaseline, Drawer, Toolbar } from '@mui/material';
+import { useLocation } from 'react-router-dom';
 import Header from './Header.tsx';
 import Sidebar from './Sidebar';
 
@@ -10,14 +11,23 @@ interface LayoutProps {
   onLogout: () => void;
 }
 
-const drawerWidth = 240;
+const expandedDrawerWidth = 240;
+const collapsedDrawerWidth = 64;
 
 const Layout: React.FC<LayoutProps> = ({ children, isLoggedIn, onLoginSuccess, onLogout }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
+  const isGerenciarPage = location.pathname.startsWith('/gerenciar');
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+
+  // Determina a largura atual da barra lateral no desktop
+  const desktopDrawerWidth = isGerenciarPage ? expandedDrawerWidth : collapsedDrawerWidth;
+
+  const drawerContent = <Sidebar isExpanded={isGerenciarPage} />;
+  const mobileDrawerContent = <Sidebar isExpanded={true} />; // Mobile sempre expandido
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -27,50 +37,63 @@ const Layout: React.FC<LayoutProps> = ({ children, isLoggedIn, onLoginSuccess, o
         onLoginSuccess={onLoginSuccess} 
         onLogout={onLogout}
         onDrawerToggle={handleDrawerToggle}
-        drawerWidth={drawerWidth}
       />
+      
       {isLoggedIn && (
         <Box
           component="nav"
-          sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
-          aria-label="menu de navegação"
+          sx={{ width: { md: desktopDrawerWidth }, flexShrink: { md: 0 } }}
         >
-          {/* Drawer para telas pequenas (temporário) */}
+          {/* Drawer para mobile (temporário e flutuante) */}
           <Drawer
             variant="temporary"
             open={mobileOpen}
             onClose={handleDrawerToggle}
-            ModalProps={{
-              keepMounted: true, // Melhora a performance de abertura em mobile.
-            }}
+            ModalProps={{ keepMounted: true }}
             sx={{
               display: { xs: 'block', md: 'none' },
-              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, backgroundColor: '#654321' },
+              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: expandedDrawerWidth, backgroundColor: '#654321', color: 'white' },
             }}
           >
-            <Sidebar />
+            {mobileDrawerContent}
           </Drawer>
-          {/* Drawer para telas grandes (permanente) */}
+
+          {/* Drawer para desktop (permanente) */}
           <Drawer
             variant="permanent"
             sx={{
               display: { xs: 'none', md: 'block' },
-              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, backgroundColor: '#654321' },
+              '& .MuiDrawer-paper': { 
+                boxSizing: 'border-box', 
+                width: desktopDrawerWidth, 
+                backgroundColor: '#654321', 
+                color: 'white',
+                transition: (theme) => theme.transitions.create('width', {
+                  easing: theme.transitions.easing.sharp,
+                  duration: theme.transitions.duration.enteringScreen,
+                }),
+                overflowX: 'hidden'
+              },
             }}
             open
           >
-            <Sidebar />
+            {drawerContent}
           </Drawer>
         </Box>
       )}
+      
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           backgroundColor: '#F5F5DC',
-          p: { xs: 1, sm: 2, md: 3 },
-          width: { md: `calc(100% - ${isLoggedIn ? drawerWidth : 0}px)` },
-          minHeight: '100vh'
+          p: 3,
+          width: { md: `calc(100% - ${isLoggedIn ? desktopDrawerWidth : 0}px)` },
+          minHeight: '100vh',
+          transition: (theme) => theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+          }),
         }}
       >
         <Toolbar /> {/* Espaçador para o conteúdo não ficar sob o Header */}

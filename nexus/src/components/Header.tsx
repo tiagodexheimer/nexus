@@ -10,6 +10,8 @@ import {
   CircularProgress,
   IconButton,
   Avatar,
+  Menu,
+  MenuItem,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Login } from '../api/login/Login';
@@ -19,7 +21,6 @@ interface HeaderProps {
   onLoginSuccess: () => void;
   onLogout: () => void;
   onDrawerToggle?: () => void;
-  drawerWidth?: number;
 }
 
 const menuItems = [
@@ -27,16 +28,35 @@ const menuItems = [
   { text: 'Solicitações', path: '/solicitacoes' },
   { text: 'Rotas', path: '/rotas' },
   { text: 'Relatórios', path: '/relatorios' },
-  { text: 'Gerenciar', path: '/gerenciar' },
+];
+
+// Itens do submenu de gerenciamento
+const gerenciarMenuItems = [
+  { text: 'Visão Geral', path: '/gerenciar' },
+  { text: 'Formulários', path: '/gerenciar/formularios' },
+  { text: 'Espécies', path: '/gerenciar/especies' },
+  { text: 'Tipos de Vistoria', path: '/gerenciar/tipos-vistoria' },
+  { text: 'Status', path: '/gerenciar/status' },
+  { text: 'Rotas', path: '/gerenciar/rotas' },
+  { text: 'Usuários', path: '/gerenciar/usuarios' },
 ];
 
 const logoSrc = "/logo.png";
 
-const Header = ({ isLoggedIn, onLoginSuccess, onLogout, onDrawerToggle, drawerWidth = 0 }: HeaderProps) => {
+const Header = ({ isLoggedIn, onLoginSuccess, onLogout, onDrawerToggle }: HeaderProps): JSX.Element => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [anchorElGerenciar, setAnchorElGerenciar] = useState<null | HTMLElement>(null);
+
+  const handleGerenciarMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElGerenciar(event.currentTarget);
+  };
+
+  const handleGerenciarMenuClose = () => {
+    setAnchorElGerenciar(null);
+  };
 
   const handleSubmitLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -58,13 +78,10 @@ const Header = ({ isLoggedIn, onLoginSuccess, onLogout, onDrawerToggle, drawerWi
   
   return (
     <AppBar
-      position="fixed" // Alterado de "sticky" para "fixed"
+      position="fixed"
       sx={{
         backgroundColor: '#4B830D',
-        // Ajusta a largura e a margem quando o drawer permanente está visível
-        width: { md: isLoggedIn ? `calc(100% - ${drawerWidth}px)` : '100%' },
-        ml: { md: isLoggedIn ? `${drawerWidth}px` : 0 },
-        zIndex: (theme) => theme.zIndex.drawer + 1, // Garante que o Header fique sobre o Drawer
+        zIndex: (theme) => theme.zIndex.drawer + 1, // Garante que o Header fique sobre a Sidebar
       }}
     >
       <Toolbar>
@@ -76,17 +93,13 @@ const Header = ({ isLoggedIn, onLoginSuccess, onLogout, onDrawerToggle, drawerWi
               aria-label="open drawer"
               edge="start"
               onClick={onDrawerToggle}
-              sx={{ mr: 2, display: { md: 'none' } }}
+              sx={{ mr: 2, display: { md: 'none' } }} // Visível apenas em mobile
             >
               <MenuIcon />
             </IconButton>
             
-            <Typography variant="h6" component="div" noWrap sx={{ flexGrow: 1, display: { xs: 'block', md: 'none' } }}>
-              Nexus
-            </Typography>
-            
-            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
-              <Avatar src={logoSrc} alt="Nexus Logo" sx={{ width: 35, height: 35, mr: 1 }} />
+            <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
+              <Avatar src={logoSrc} alt="Nexus Logo" sx={{ width: 35, height: 35, mr: 1, display: { xs: 'none', md: 'flex' } }} />
               <Typography variant="h6" component="div" noWrap>
                 Nexus Ambiental
               </Typography>
@@ -98,9 +111,31 @@ const Header = ({ isLoggedIn, onLoginSuccess, onLogout, onDrawerToggle, drawerWi
                   {item.text}
                 </Button>
               ))}
+              {/* Botão Gerenciar com Menu Dropdown */}
+              <Button
+                aria-controls="gerenciar-menu"
+                aria-haspopup="true"
+                onClick={handleGerenciarMenuOpen}
+                sx={{ color: 'white' }}
+              >
+                Gerenciar
+              </Button>
+              <Menu
+                id="gerenciar-menu"
+                anchorEl={anchorElGerenciar}
+                keepMounted
+                open={Boolean(anchorElGerenciar)}
+                onClose={handleGerenciarMenuClose}
+              >
+                {gerenciarMenuItems.map((item) => (
+                  <MenuItem key={item.text} component={RouterLink} to={item.path} onClick={handleGerenciarMenuClose}>
+                    {item.text}
+                  </MenuItem>
+                ))}
+              </Menu>
             </Box>
 
-            <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center', ml: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
               <Typography variant="body1" sx={{ mr: 2, display: { xs: 'none', sm: 'block' } }}>
                 Olá, Utilizador
               </Typography>

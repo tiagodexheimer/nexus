@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   Box,
   List,
@@ -9,7 +9,6 @@ import {
   Divider,
   Toolbar,
   Collapse,
-  Typography
 } from '@mui/material';
 import { useLocation, Link as RouterLink } from 'react-router-dom';
 import {
@@ -20,11 +19,6 @@ import {
   Settings as SettingsIcon,
   ExpandLess,
   ExpandMore,
-  People as PeopleIcon,
-  Description as DescriptionIcon,
-  Category as CategoryIcon,
-  PlaylistAddCheck as PlaylistAddCheckIcon,
-  Park as ParkIcon
 } from '@mui/icons-material';
 
 // Itens do menu principal
@@ -35,30 +29,13 @@ const mainMenuItems = [
   { text: 'Relatórios', path: '/relatorios', icon: <AssessmentIcon /> },
 ];
 
-// Itens do submenu de gerenciamento
-const gerenciarMenuItems = [
-  { text: 'Formulários', path: '/gerenciar/formularios', icon: <DescriptionIcon /> },
-  { text: 'Espécies', path: '/gerenciar/especies', icon: <ParkIcon /> },
-  { text: 'Tipos de Vistoria', path: '/gerenciar/tipos-vistoria', icon: <CategoryIcon /> },
-  { text: 'Status', path: '/gerenciar/status', icon: <PlaylistAddCheckIcon /> },
-  { text: 'Rotas', path: '/gerenciar/rotas', icon: <AltRouteIcon /> },
-  { text: 'Usuários', path: '/gerenciar/usuarios', icon: <PeopleIcon /> },
-];
+interface SidebarProps {
+  isExpanded: boolean;
+}
 
-const Sidebar: React.FC = () => {
+const Sidebar: React.FC<SidebarProps> = ({ isExpanded }) => {
   const location = useLocation();
-  const [gerenciarOpen, setGerenciarOpen] = useState(false);
-
-  // Abre o submenu "Gerenciar" se a rota atual for uma de suas subpáginas
-  useEffect(() => {
-    if (location.pathname.startsWith('/gerenciar')) {
-      setGerenciarOpen(true);
-    }
-  }, [location.pathname]);
-
-  const handleGerenciarClick = () => {
-    setGerenciarOpen(!gerenciarOpen);
-  };
+  const isGerenciarPage = location.pathname.startsWith('/gerenciar');
 
   return (
     <div>
@@ -66,34 +43,41 @@ const Sidebar: React.FC = () => {
       <Divider />
       <List>
         {mainMenuItems.map((item) => (
-          <ListItem key={item.text} disablePadding>
-            <ListItemButton component={RouterLink} to={item.path}>
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
+          <ListItem key={item.text} disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              component={RouterLink}
+              to={item.path}
+              sx={{
+                minHeight: 48,
+                justifyContent: isExpanded ? 'initial' : 'center',
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 0, mr: isExpanded ? 3 : 'auto', justifyContent: 'center' }}>
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText primary={item.text} sx={{ opacity: isExpanded ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
         ))}
         
-        {/* Item "Gerenciar" que expande para mostrar o submenu */}
-        <ListItemButton onClick={handleGerenciarClick}>
-          <ListItemIcon>
-            <SettingsIcon />
-          </ListItemIcon>
-          <ListItemText primary="Gerenciar" />
-          {gerenciarOpen ? <ExpandLess /> : <ExpandMore />}
-        </ListItemButton>
-        <Collapse in={gerenciarOpen} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            {gerenciarMenuItems.map((item) => (
-              <ListItem key={item.text} disablePadding>
-                <ListItemButton component={RouterLink} to={item.path} sx={{ pl: 4 }}>
-                  <ListItemIcon>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.text} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-        </Collapse>
+        {/* Item "Gerenciar" que leva para a página e expande o menu */}
+        <ListItem disablePadding sx={{ display: 'block' }}>
+          <ListItemButton
+            component={RouterLink}
+            to="/gerenciar"
+            sx={{
+              minHeight: 48,
+              justifyContent: isExpanded ? 'initial' : 'center',
+              px: 2.5,
+            }}
+          >
+            <ListItemIcon sx={{ minWidth: 0, mr: isExpanded ? 3 : 'auto', justifyContent: 'center' }}>
+              <SettingsIcon />
+            </ListItemIcon>
+            <ListItemText primary="Gerenciar" sx={{ opacity: isExpanded ? 1 : 0 }} />
+          </ListItemButton>
+        </ListItem>
       </List>
     </div>
   );
