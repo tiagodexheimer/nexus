@@ -2,84 +2,51 @@ import React from 'react';
 import {
   Box,
   Typography,
-  Button,
   Paper,
   List,
   ListItem,
   ListItemText,
-  IconButton,
-  Checkbox,
-  TextField,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-} from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+  Button,
+  // A importação de 'IconButton' foi removida pois não estava sendo usada
+} from "@mui/material";
+import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 
-const mockForms = [
-  { id: 1, name: 'Autorização de poda', status: 'Ativo' },
-  { id: 2, name: 'Autorização de supressão', status: 'Ativo' },
-  { id: 3, name: 'Fiscalização de supressão irregular', status: 'Ativo' },
-  { id: 4, name: 'Fiscalização de poda irregular', status: 'Ativo' },
+// Dados de exemplo para os formulários
+const mockFormularios = [
+  { id: 'form1', nome: 'Laudo de Vistoria Padrão', versao: '1.2' },
+  { id: 'form2', nome: 'Formulário de Supressão Vegetal', versao: '2.0' },
+  { id: 'form3', nome: 'Checklist de Conformidade Ambiental', versao: '1.0' },
 ];
 
-const GerenciarFormularios: React.FC = () => {
+const GerenciarFormularios = () => {
   return (
-    <Box>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Gerenciar Formulários
-      </Typography>
-
-      <Paper sx={{ p: 2, mb: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Button variant="contained">Novo Formulário</Button>
-          <TextField label="Filtro" variant="outlined" size="small" sx={{ flexGrow: 1 }} />
-          <FormControl size="small" sx={{ minWidth: 120 }}>
-            <InputLabel>Tipo</InputLabel>
-            <Select label="Tipo">
-              <MenuItem value="poda">Poda</MenuItem>
-              <MenuItem value="supressao">Supressão</MenuItem>
-              <MenuItem value="fiscalizacao">Fiscalização</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-      </Paper>
-
+    <Paper elevation={3} sx={{ p: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h5" component="h2">
+          Formulários de Vistoria
+        </Typography>
+        <Button variant="contained">Novo Formulário</Button>
+      </Box>
       <List>
-        {mockForms.map((form) => (
-          <Paper key={form.id} sx={{ mb: 2 }}>
-            <ListItem
-              secondaryAction={
-                <Box>
-                  <Button
-                    variant="outlined"
-                    startIcon={<EditIcon />}
-                    sx={{ mr: 1 }}
-                  >
-                    Editar
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    startIcon={<DeleteIcon />}
-                  >
-                    Remover
-                  </Button>
-                </Box>
-              }
-            >
-              <Checkbox edge="start" />
-              <ListItemText
-                primary={<strong>{form.name}</strong>}
-                secondary={`Status: ${form.status}`}
-              />
-            </ListItem>
-          </Paper>
+        {mockFormularios.map((form) => (
+          <ListItem
+            key={form.id}
+            divider
+            secondaryAction={
+              <>
+                <Button startIcon={<EditIcon />} sx={{ mr: 1 }}>Editar</Button>
+                <Button startIcon={<DeleteIcon />} color="error">Excluir</Button>
+              </>
+            }
+          >
+            <ListItemText
+              primary={form.nome}
+              secondary={`Versão: ${form.versao}`}
+            />
+          </ListItem>
         ))}
       </List>
-    </Box>
+    </Paper>
   );
 };
 
