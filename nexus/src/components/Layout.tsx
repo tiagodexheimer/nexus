@@ -11,7 +11,7 @@ interface LayoutProps {
   onLogout: () => void;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children, isLoggedIn, onLoginSuccess, onLogout }) => {
+const Layout = ({ children, isLoggedIn, onLoginSuccess, onLogout }: LayoutProps) => {
   return (
     <>
       <CssBaseline />
