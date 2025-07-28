@@ -8,15 +8,17 @@ import {
   Chip,
   Typography,
 } from '@mui/material';
-import { Edit as EditIcon, Delete as DeleteIcon, Attachment as AttachmentIcon } from '@mui/icons-material';
-import type { Solicitacao } from '../types';
+import { Edit as EditIcon, Delete as DeleteIcon, Attachment as AttachmentIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
+import type { Solicitacao } from '../types'; //
 
+// Interface de props atualizada para incluir onVerDetalhes
 interface SolicitacaoCardProps {
   solicitacao: Solicitacao;
   onRemove: (id: string) => void;
+  onVerDetalhes: (id: string) => void;
 }
 
-const SolicitacaoCard: React.FC<SolicitacaoCardProps> = ({ solicitacao, onRemove }) => {
+const SolicitacaoCard: React.FC<SolicitacaoCardProps> = ({ solicitacao, onRemove, onVerDetalhes }) => {
   const getStatusColor = (status: Solicitacao['status']) => {
     switch (status) {
       case 'Aguardando Agendamento':
@@ -33,6 +35,10 @@ const SolicitacaoCard: React.FC<SolicitacaoCardProps> = ({ solicitacao, onRemove
   return (
     <Card sx={{ display: 'flex', mb: 2, alignItems: 'center' }}>
       <Box sx={{ p: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+        {/* Botão "Ver Detalhes" adicionado */}
+        <Button variant="outlined" size="small" startIcon={<VisibilityIcon />} onClick={() => onVerDetalhes(solicitacao.id)}>
+          Detalhes
+        </Button>
         <Button variant="outlined" size="small" startIcon={<EditIcon />}>
           Editar
         </Button>
