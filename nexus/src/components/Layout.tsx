@@ -1,7 +1,7 @@
 // src/components/Layout.tsx
 import React from 'react';
 import { Box, CssBaseline } from '@mui/material';
-import Header from './Header';
+import Header from './Header.tsx';
 import Sidebar from './Sidebar';
 
 interface LayoutProps {
