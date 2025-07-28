@@ -24,7 +24,8 @@ const managementOptions = [
   {
     title: 'Tipos de Vistorias',
     description: 'Defina os diferentes tipos de vistorias disponíveis.',
-    path: '/gerenciar/vistorias',
+    // CORREÇÃO: O caminho foi ajustado para o correto.
+    path: '/gerenciar/tipos-vistoria',
     icon: <RuleFolderIcon sx={{ fontSize: 40 }} />,
   },
   {
