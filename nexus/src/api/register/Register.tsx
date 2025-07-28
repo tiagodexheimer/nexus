@@ -11,17 +11,17 @@
  * @returns {Promise<string>} Uma promessa que resolve com uma mensagem de sucesso ou rejeita com um erro.
  */
 export const registerUser = (name: string, email: string, password: string): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      // Simula um atraso de rede de 1.5 segundos
-      setTimeout(() => {
-        if (name && email && password) {
-          // Em um cenário real, você faria uma requisição para o backend aqui.
-          // e lidaria com possíveis erros, como email já cadastrado.
-          console.log('Usuário cadastrado (simulação):', { name, email });
-          resolve('Cadastro realizado com sucesso!');
-        } else {
-          reject(new Error('Todos os campos são obrigatórios.'));
-        }
-      }, 1500);
-    });
-  };
+  return new Promise((resolve, reject) => {
+    // Simula um atraso de rede de 1.5 segundos
+    setTimeout(() => {
+      if (name && email && password) {
+        // Em um cenário real, você faria uma requisição para o backend aqui.
+        // e lidaria com possíveis erros, como email já cadastrado.
+        console.log('Usuário cadastrado (simulação):', { name, email });
+        resolve('Cadastro realizado com sucesso!');
+      } else {
+        reject(new Error('Todos os campos são obrigatórios.'));
+      }
+    }, 1500);
+  });
+};

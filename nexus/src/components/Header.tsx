@@ -43,7 +43,7 @@ const gerenciarMenuItems = [
 
 const logoSrc = "/logo.png";
 
-const Header = ({ isLoggedIn, onLoginSuccess, onLogout, onDrawerToggle }: HeaderProps): JSX.Element => {
+const Header = ({ isLoggedIn, onLoginSuccess, onLogout, onDrawerToggle }: HeaderProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
