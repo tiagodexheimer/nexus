@@ -58,7 +58,8 @@ const Gerenciar: React.FC = () => (
     </Typography>
     <Grid container spacing={4}>
       {managementOptions.map((option) => (
-        <Grid item xs={12} sm={6} md={4} key={option.title}>
+        // CORREÇÃO: Removida a propriedade 'item'
+        <Grid xs={12} sm={6} md={4} key={option.title}>
           <Card sx={{ height: '100%' }}>
             <CardActionArea component={RouterLink} to={option.path} sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
               <CardContent sx={{ textAlign: 'center' }}>
