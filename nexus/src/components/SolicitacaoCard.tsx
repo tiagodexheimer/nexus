@@ -48,8 +48,18 @@ const SolicitacaoCard: React.FC<SolicitacaoCardProps> = ({ solicitacao, onRemove
   };
 
   return (
-    <Card sx={{ display: 'flex', mb: 2, alignItems: 'stretch' }}>
-       <Box sx={{ p: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1, borderRight: '1px solid rgba(0, 0, 0, 0.12)' }}>
+    <Card sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, mb: 2, alignItems: 'stretch' }}>
+       <Box sx={{ 
+         p: 1, 
+         display: 'flex', 
+         flexDirection: { xs: 'row', sm: 'column' }, 
+         alignItems: 'center', 
+         justifyContent: 'center', 
+         gap: 1, 
+         borderRight: { sm: '1px solid rgba(0, 0, 0, 0.12)' },
+         borderBottom: { xs: '1px solid rgba(0, 0, 0, 0.12)', sm: 'none' },
+         width: { xs: '100%', sm: 'auto' }
+       }}>
         <Checkbox
             checked={isSelected}
             onChange={() => onSelect(solicitacao.id)}
@@ -63,9 +73,9 @@ const SolicitacaoCard: React.FC<SolicitacaoCardProps> = ({ solicitacao, onRemove
           Remover
         </Button>
       </Box>
-      <CardActionArea onClick={() => onVerDetalhes(solicitacao)} sx={{ display: 'flex', flex: 1, alignItems: 'center', p: 1 }}>
-        <img src={solicitacao.mapaUrl} alt="Mapa da localização" style={{ width: 150, height: 120, objectFit: 'cover', borderRadius: 4, alignSelf: 'center' }} />
-        <CardContent sx={{ flex: 1 }}>
+      <CardActionArea onClick={() => onVerDetalhes(solicitacao)} sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, flex: 1, alignItems: 'center', p: 1 }}>
+        <img src={solicitacao.mapaUrl} alt="Mapa da localização" style={{ width: '100%', maxWidth: '150px', height: '120px', objectFit: 'cover', borderRadius: 4, alignSelf: 'center' }} />
+        <CardContent sx={{ flex: 1, width: '100%' }}>
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Typography variant="body2" color="text.secondary">
               Solicitação {solicitacao.id} • Prazo {solicitacao.prazo} dias
@@ -86,7 +96,7 @@ const SolicitacaoCard: React.FC<SolicitacaoCardProps> = ({ solicitacao, onRemove
             {solicitacao.descricao}
           </Typography>
         </CardContent>
-        <CardActions sx={{ p: 2, alignSelf: 'center' }}>
+        <CardActions sx={{ p: 2, alignSelf: { xs: 'flex-end', sm: 'center' } }}>
           <Chip {...getStatusChipProps(solicitacao.status)} />
         </CardActions>
       </CardActionArea>

@@ -185,13 +185,18 @@ const Solicitacoes: React.FC = () => {
 
   return (
     <Box>
-      <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-        <Grid item>
-          <Typography variant="h4" component="h1">
-            Painel de Solicitações
-          </Typography>
-        </Grid>
-        <Grid item>
+      <Box sx={{ 
+        display: 'flex', 
+        flexDirection: { xs: 'column', md: 'row' }, 
+        justifyContent: 'space-between', 
+        alignItems: { xs: 'stretch', md: 'center' }, 
+        mb: 2,
+        gap: 2
+      }}>
+        <Typography variant="h4" component="h1">
+          Painel de Solicitações
+        </Typography>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1 }}>
           <Button variant="contained" startIcon={<AddIcon />} onClick={handleOpenNovaSolicitacaoDialog}>
             Nova Solicitação
           </Button>
@@ -201,12 +206,11 @@ const Solicitacoes: React.FC = () => {
             startIcon={<AltRouteIcon />}
             onClick={handleCreateRouteClick}
             disabled={selectedSolicitacoes.length === 0}
-            sx={{ ml: 2 }}
           >
             Criar Rota ({selectedSolicitacoes.length})
           </Button>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
       
       <Box sx={{ my: 2 }}>
         <TextField
