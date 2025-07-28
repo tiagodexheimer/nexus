@@ -8,8 +8,9 @@
       "jsx": "react-jsx",
       "moduleResolution": "node",
       "esModuleInterop": true,
-      "allowSyntheticDefaultImports": true
-      // other settings...
-    }
+      "allowSyntheticDefaultImports": true,
+      "lib": ["dom", "dom.iterable", "esnext"], // Garanta que 'dom' esteja incluído
+      "types": ["react", "react-dom", "node"] // Garanta que 'react' esteja aqui
+  },
 
 }
