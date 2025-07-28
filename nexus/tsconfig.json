@@ -8,7 +8,7 @@
       "jsx": "react-jsx",
       "moduleResolution": "node",
       "esModuleInterop": true,
-      "allowSyntheticDefaultImports": true,
+      "allowSyntheticDefaultImports": true
       // other settings...
     }
 

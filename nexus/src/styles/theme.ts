@@ -1,4 +1,5 @@
 import { createTheme, type ThemeOptions, alpha } from '@mui/material/styles';
+import { ptBR } from '@mui/material/locale';
 
 export const themeOptions: ThemeOptions = {
   palette: {
@@ -75,6 +76,6 @@ export const themeOptions: ThemeOptions = {
 };
 
 // Criando o tema a partir das suas opções
-const theme = createTheme(themeOptions);
+const theme = createTheme(themeOptions, ptBR);
 
 export default theme;
