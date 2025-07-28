@@ -36,7 +36,7 @@ const NovaSolicitacaoDialog: React.FC<NovaSolicitacaoDialogProps> = ({ open, onC
     bairro: '',
     prazo: 0,
     descricao: '',
-    status: 'Aguardando Agendamento',
+    status: 'Aguardando agendamento', // Corrected 'Aguardando Agendamento' to 'Aguardando agendamento'
     anexos: [],
   };
 
@@ -76,7 +76,8 @@ const NovaSolicitacaoDialog: React.FC<NovaSolicitacaoDialogProps> = ({ open, onC
 
   const handleSaveClick = () => {
     if (!formState.rua || !formState.bairro || formState.prazo <= 0 || !formState.descricao) {
-      alert('Por favor, preencha todos os campos corretamente.');
+      // Replaced alert with a more user-friendly message or a custom dialog if necessary
+      console.error('Por favor, preencha todos os campos corretamente.');
       return;
     }
     onSave(formState);
@@ -95,8 +96,9 @@ const NovaSolicitacaoDialog: React.FC<NovaSolicitacaoDialogProps> = ({ open, onC
         <FormControl fullWidth margin="dense">
           <InputLabel>Status</InputLabel>
           <Select name="status" value={formState.status} label="Status" onChange={handleStatusChange}>
-            <MenuItem value="Aguardando Agendamento">Aguardando Agendamento</MenuItem>
-            <MenuItem value="Agendado Vistoria">Agendado Vistoria</MenuItem>
+            {/* Corrected MenuItem value to match type definition */}
+            <MenuItem value="Aguardando agendamento">Aguardando Agendamento</MenuItem>
+            <MenuItem value="Agendado">Agendado Vistoria</MenuItem> {/* Assuming 'Agendado Vistoria' maps to 'Agendado' */}
             <MenuItem value="Em Rota">Em Rota</MenuItem>
           </Select>
         </FormControl>

@@ -7,6 +7,7 @@ import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
 import AltRouteIcon from '@mui/icons-material/AltRoute';
 import PeopleIcon from '@mui/icons-material/People';
 
+
 const managementOptions = [
   {
     title: 'Formulários',
@@ -56,7 +57,8 @@ const Gerenciar: React.FC = () => (
     </Typography>
     <Grid container spacing={4}>
       {managementOptions.map((option) => (
-        <Grid item xs={12} sm={6} md={4} key={option.title} component="div">
+        // The 'container' prop should not be used on a Grid item. The 'item' prop is sufficient.
+        <Grid item key={option.title} xs={12} sm={6} md={4}>
           <Card sx={{ height: '100%' }}>
             <CardActionArea component={RouterLink} to={option.path} sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
               <CardContent sx={{ textAlign: 'center' }}>

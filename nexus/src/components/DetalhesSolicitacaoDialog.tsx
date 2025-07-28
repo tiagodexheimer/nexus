@@ -32,7 +32,7 @@ const DetalhesSolicitacaoDialog: React.FC<DetalhesSolicitacaoDialogProps> = ({ o
         return { label: 'Aguardando Agendamento', sx: { backgroundColor: '#9c27b0', color: 'white' } };
       case 'Agendado':
         return { label: 'Agendado', sx: { backgroundColor: '#2196f3', color: 'white' } };
-      case 'Em rota':
+      case 'Em Rota': // Corrected 'Em rota' to 'Em Rota' to match type definition
         return { label: 'Em Rota', color: 'warning' as 'warning' };
       case 'Concluído':
         return { label: 'Concluído', color: 'success' as 'success' };
@@ -46,7 +46,8 @@ const DetalhesSolicitacaoDialog: React.FC<DetalhesSolicitacaoDialogProps> = ({ o
       <DialogTitle>Detalhes da Solicitação: {solicitacao.id}</DialogTitle>
       <DialogContent dividers>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
+          {/* Added component="div" to Grid item */}
+          <Grid item xs={12} md={6} component="div">
             {/* Box adicionado para limitar a altura da imagem */}
             <Box sx={{ maxHeight: '350px', overflow: 'hidden', borderRadius: '4px' }}>
               <img
@@ -56,7 +57,8 @@ const DetalhesSolicitacaoDialog: React.FC<DetalhesSolicitacaoDialogProps> = ({ o
               />
             </Box>
           </Grid>
-          <Grid item xs={12} md={6}>
+          {/* Added component="div" to Grid item */}
+          <Grid item xs={12} md={6} component="div">
             <Typography variant="h6">{solicitacao.rua}</Typography>
             <Typography variant="subtitle1" color="text.secondary" gutterBottom>{solicitacao.bairro}</Typography>
             <Box sx={{ my: 2 }}>
