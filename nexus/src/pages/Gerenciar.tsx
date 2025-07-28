@@ -1,4 +1,3 @@
-import React from 'react';
 import { Grid, Card, CardActionArea, CardContent, Typography, Box } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import ListAltIcon from '@mui/icons-material/ListAlt';
