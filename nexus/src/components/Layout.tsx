@@ -1,6 +1,5 @@
-// src/components/Layout.tsx
-import React, { type JSX } from 'react';
-import { Box, CssBaseline } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, CssBaseline, Drawer, Toolbar } from '@mui/material';
 import Header from './Header.tsx';
 import Sidebar from './Sidebar';
 
@@ -11,31 +10,73 @@ interface LayoutProps {
   onLogout: () => void;
 }
 
-const Layout = ({ children, isLoggedIn, onLoginSuccess, onLogout }: LayoutProps): JSX.Element => {
+const drawerWidth = 240;
+
+const Layout: React.FC<LayoutProps> = ({ children, isLoggedIn, onLoginSuccess, onLogout }) => {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
   return (
-    <>
+    <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        <Header 
-          isLoggedIn={isLoggedIn} 
-          onLoginSuccess={onLoginSuccess} 
-          onLogout={onLogout} 
-        />
-        <Box sx={{ display: 'flex', flexGrow: 1 }}>
-          {isLoggedIn && <Sidebar />} {/* Mostra a Sidebar somente se logado */}
-          <Box
-            component="main"
+      <Header 
+        isLoggedIn={isLoggedIn} 
+        onLoginSuccess={onLoginSuccess} 
+        onLogout={onLogout}
+        onDrawerToggle={handleDrawerToggle}
+        drawerWidth={drawerWidth}
+      />
+      {isLoggedIn && (
+        <Box
+          component="nav"
+          sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
+          aria-label="menu de navegação"
+        >
+          {/* Drawer para telas pequenas (temporário) */}
+          <Drawer
+            variant="temporary"
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            ModalProps={{
+              keepMounted: true, // Melhora a performance de abertura em mobile.
+            }}
             sx={{
-              flexGrow: 1,
-              backgroundColor: '#F5F5DC',
-              p: 3,
+              display: { xs: 'block', md: 'none' },
+              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, backgroundColor: '#654321' },
             }}
           >
-            {children} {/* O conteúdo (rotas) será renderizado aqui */}
-          </Box>
+            <Sidebar />
+          </Drawer>
+          {/* Drawer para telas grandes (permanente) */}
+          <Drawer
+            variant="permanent"
+            sx={{
+              display: { xs: 'none', md: 'block' },
+              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, backgroundColor: '#654321' },
+            }}
+            open
+          >
+            <Sidebar />
+          </Drawer>
         </Box>
+      )}
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          backgroundColor: '#F5F5DC',
+          p: { xs: 1, sm: 2, md: 3 },
+          width: { md: `calc(100% - ${isLoggedIn ? drawerWidth : 0}px)` },
+          minHeight: '100vh'
+        }}
+      >
+        <Toolbar /> {/* Espaçador para o conteúdo não ficar sob o Header */}
+        {children}
       </Box>
-    </>
+    </Box>
   );
 };
 

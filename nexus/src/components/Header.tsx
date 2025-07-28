@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, type JSX } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import {
   AppBar,
@@ -8,8 +8,6 @@ import {
   Box,
   TextField,
   CircularProgress,
-  Menu,
-  MenuItem,
   IconButton,
   Avatar,
 } from '@mui/material';
@@ -20,6 +18,8 @@ interface HeaderProps {
   isLoggedIn: boolean;
   onLoginSuccess: () => void;
   onLogout: () => void;
+  onDrawerToggle?: () => void;
+  drawerWidth?: number;
 }
 
 const menuItems = [
@@ -32,21 +32,11 @@ const menuItems = [
 
 const logoSrc = "/logo.png";
 
-
-const Header = ({ isLoggedIn, onLoginSuccess, onLogout }: HeaderProps): JSX.Element => {
+const Header = ({ isLoggedIn, onLoginSuccess, onLogout, onDrawerToggle, drawerWidth = 0 }: HeaderProps): JSX.Element => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
 
   const handleSubmitLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -67,53 +57,50 @@ const Header = ({ isLoggedIn, onLoginSuccess, onLogout }: HeaderProps): JSX.Elem
   };
   
   return (
-    <AppBar position="sticky" sx={{ backgroundColor: '#4B830D' }}>
+    <AppBar
+      position="fixed" // Alterado de "sticky" para "fixed"
+      sx={{
+        backgroundColor: '#4B830D',
+        // Ajusta a largura e a margem quando o drawer permanente está visível
+        width: { md: isLoggedIn ? `calc(100% - ${drawerWidth}px)` : '100%' },
+        ml: { md: isLoggedIn ? `${drawerWidth}px` : 0 },
+        zIndex: (theme) => theme.zIndex.drawer + 1, // Garante que o Header fique sobre o Drawer
+      }}
+    >
       <Toolbar>
         {isLoggedIn ? (
           // --- APARÊNCIA QUANDO LOGADO ---
           <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-              <IconButton size="large" aria-label="menu de navegação" aria-controls="menu-appbar" aria-haspopup="true" onClick={handleOpenNavMenu} color="inherit">
-                <MenuIcon />
-              </IconButton>
-              <Menu id="menu-appbar" anchorEl={anchorElNav} anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} keepMounted transformOrigin={{ vertical: 'top', horizontal: 'left' }} open={Boolean(anchorElNav)} onClose={handleCloseNavMenu} sx={{ display: { xs: 'block', md: 'none' } }}>
-                {menuItems.map((item) => (
-                  <MenuItem key={item.text} component={RouterLink} to={item.path} onClick={handleCloseNavMenu}>
-                    <Typography textAlign="center">{item.text}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={onDrawerToggle}
+              sx={{ mr: 2, display: { md: 'none' } }}
+            >
+              <MenuIcon />
+            </IconButton>
             
-            <Avatar src={logoSrc} alt="Nexus Logo" sx={{ width: 35, height: 35, mr: 1 }} />
-            <Typography variant="h6" component="div" sx={{ flexGrow: { xs: 1, md: 0 } }}>
-              Nexus Ambiental
+            <Typography variant="h6" component="div" noWrap sx={{ flexGrow: 1, display: { xs: 'block', md: 'none' } }}>
+              Nexus
             </Typography>
+            
+            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
+              <Avatar src={logoSrc} alt="Nexus Logo" sx={{ width: 35, height: 35, mr: 1 }} />
+              <Typography variant="h6" component="div" noWrap>
+                Nexus Ambiental
+              </Typography>
+            </Box>
 
-            <Box sx={{ flex: 2, display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
+            <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
               {menuItems.map((item) => (
-                <Button
-                  key={item.text}
-                  component={RouterLink}
-                  to={item.path}
-                  color="inherit"
-                  sx={{
-                    margin: '0 10px',
-                    textTransform: 'none',
-                    fontSize: '1rem',
-                    color: 'white',
-                    '&:hover': {
-                      backgroundColor: '#81C784', // Muda a cor de fundo no hover
-                      color: 'white', // Garante que a cor do texto não mude
-                    },
-                  }}
-                >
+                <Button key={item.text} component={RouterLink} to={item.path} sx={{ color: 'white' }}>
                   {item.text}
                 </Button>
               ))}
             </Box>
 
-            <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+            <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center', ml: 2 }}>
               <Typography variant="body1" sx={{ mr: 2, display: { xs: 'none', sm: 'block' } }}>
                 Olá, Utilizador
               </Typography>
@@ -123,20 +110,20 @@ const Header = ({ isLoggedIn, onLoginSuccess, onLogout }: HeaderProps): JSX.Elem
             </Box>
           </Box>
         ) : (
-          // --- APARÊNCIA QUANDO DESLOGADO ---
-          <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          // --- APARÊNCIA QUANDO DESLOGADO (RESPONSIVO) ---
+          <Box sx={{ width: '100%', display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <Avatar src={logoSrc} alt="Nexus Logo" sx={{ width: 35, height: 35, mr: 1 }} />
                 <Typography variant="h6" component="div">
                     Nexus Ambiental
                 </Typography>
             </Box>
             
-            <Box component="form" onSubmit={handleSubmitLogin} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              {error && <Typography variant="caption" color="error">{error}</Typography>}
-              <TextField variant="outlined" size="small" label="Email" value={email} onChange={(e) => setEmail(e.target.value)} disabled={loading} sx={{ '& .MuiInputBase-root': { backgroundColor: 'rgba(255,255,255,0.1)', color: 'white' } }}/>
-              <TextField variant="outlined" size="small" type="password" label="Senha" value={password} onChange={(e) => setPassword(e.target.value)} disabled={loading} sx={{ '& .MuiInputBase-root': { backgroundColor: 'rgba(255,255,255,0.1)', color: 'white' } }}/>
-              <Button type="submit" variant="outlined" color="inherit" disabled={loading}>
+            <Box component="form" onSubmit={handleSubmitLogin} sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'center', gap: 1, width: { xs: '100%', sm: 'auto' } }}>
+              {error && <Typography variant="caption" color="error" sx={{ width: '100%', textAlign: 'center' }}>{error}</Typography>}
+              <TextField fullWidth variant="outlined" size="small" label="Email" value={email} onChange={(e) => setEmail(e.target.value)} disabled={loading} sx={{ '& .MuiInputBase-root': { backgroundColor: 'rgba(255,255,255,0.1)', color: 'white' } }}/>
+              <TextField fullWidth variant="outlined" size="small" type="password" label="Senha" value={password} onChange={(e) => setPassword(e.target.value)} disabled={loading} sx={{ '& .MuiInputBase-root': { backgroundColor: 'rgba(255,255,255,0.1)', color: 'white' } }}/>
+              <Button type="submit" variant="outlined" color="inherit" disabled={loading} fullWidth sx={{ minWidth: '100px' }}>
                 {loading ? <CircularProgress size={24} /> : 'Entrar'}
               </Button>
             </Box>
