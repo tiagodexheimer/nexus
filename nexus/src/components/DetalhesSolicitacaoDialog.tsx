@@ -46,19 +46,17 @@ const DetalhesSolicitacaoDialog: React.FC<DetalhesSolicitacaoDialogProps> = ({ o
       <DialogTitle>Detalhes da Solicitação: {solicitacao.id}</DialogTitle>
       <DialogContent dividers>
         <Grid container spacing={2}>
-          {/* CORREÇÃO: Removida a propriedade 'item' */}
-          <Grid xs={12} md={6}>
+          <Grid item xs={12} md={6}>
             {/* Box adicionado para limitar a altura da imagem */}
             <Box sx={{ maxHeight: '350px', overflow: 'hidden', borderRadius: '4px' }}>
-              <img 
-                src={solicitacao.mapaUrl} 
-                alt="Mapa da localização" 
-                style={{ width: '100%', height: 'auto', objectFit: 'cover', display: 'block' }} 
+              <img
+                src={solicitacao.mapaUrl}
+                alt="Mapa da localização"
+                style={{ width: '100%', height: 'auto', objectFit: 'cover', display: 'block' }}
               />
             </Box>
           </Grid>
-          {/* CORREÇÃO: Removida a propriedade 'item' */}
-          <Grid xs={12} md={6}>
+          <Grid item xs={12} md={6}>
             <Typography variant="h6">{solicitacao.rua}</Typography>
             <Typography variant="subtitle1" color="text.secondary" gutterBottom>{solicitacao.bairro}</Typography>
             <Box sx={{ my: 2 }}>
