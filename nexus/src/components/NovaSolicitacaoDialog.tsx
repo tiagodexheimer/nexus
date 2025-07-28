@@ -36,7 +36,7 @@ const NovaSolicitacaoDialog: React.FC<NovaSolicitacaoDialogProps> = ({ open, onC
     bairro: '',
     prazo: 0,
     descricao: '',
-    status: 'Sem rota', // Status inicial alterado
+    status: 'Aguardando Agendamento',
     anexos: [],
   };
 
@@ -95,11 +95,9 @@ const NovaSolicitacaoDialog: React.FC<NovaSolicitacaoDialogProps> = ({ open, onC
         <FormControl fullWidth margin="dense">
           <InputLabel>Status</InputLabel>
           <Select name="status" value={formState.status} label="Status" onChange={handleStatusChange}>
-            <MenuItem value="Sem rota">Sem Rota</MenuItem>
-            <MenuItem value="Aguardando agendamento">Aguardando Agendamento</MenuItem>
-            <MenuItem value="Agendado">Agendado</MenuItem>
-            <MenuItem value="Em rota">Em Rota</MenuItem>
-            <MenuItem value="Concluído">Concluído</MenuItem>
+            <MenuItem value="Aguardando Agendamento">Aguardando Agendamento</MenuItem>
+            <MenuItem value="Agendado Vistoria">Agendado Vistoria</MenuItem>
+            <MenuItem value="Em Rota">Em Rota</MenuItem>
           </Select>
         </FormControl>
         <Box mt={2}>
