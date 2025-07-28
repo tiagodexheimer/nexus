@@ -9,6 +9,7 @@ import {
   InputAdornment,
   List,
   ListItem,
+  ListItemButton, // Importado ListItemButton
   ListItemText,
   Chip,
   Button,
@@ -55,10 +56,9 @@ const statusColors: Record<Status, "default" | "warning" | "info" | "success"> =
 const Solicitacoes = () => {
   const [tabIndex, setTabIndex] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-  const [solicitacoes] = useState<Solicitacao[]>(mockSolicitacoes); // Removido setSolicitacoes se não for usado para alterar
+  const [solicitacoes] = useState<Solicitacao[]>(mockSolicitacoes);
   const [selectedSolicitacao, setSelectedSolicitacao] = useState<Solicitacao | null>(null);
 
-  // Corrigido: Removido o parâmetro 'event' não utilizado
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setTabIndex(newValue);
   };
@@ -84,12 +84,16 @@ const Solicitacoes = () => {
   const renderList = (items: Solicitacao[]) => (
     <List>
       {items.map(item => (
-        <ListItem key={item.id} divider button onClick={() => handleOpenDetails(item)}>
-          <ListItemText 
-            primary={`Protocolo: ${item.protocolo} - ${item.proprietario}`}
-            secondary={`Data: ${item.data}`}
-          />
-          <Chip label={item.status} color={statusColors[item.status]} size="small" />
+        // Corrigido: Removido 'button' e 'onClick' do ListItem. Adicionado 'disablePadding'.
+        <ListItem key={item.id} divider disablePadding>
+          {/* Corrigido: Adicionado ListItemButton para a área clicável */}
+          <ListItemButton onClick={() => handleOpenDetails(item)}>
+            <ListItemText 
+              primary={`Protocolo: ${item.protocolo} - ${item.proprietario}`}
+              secondary={`Data: ${item.data}`}
+            />
+            <Chip label={item.status} color={statusColors[item.status]} size="small" />
+          </ListItemButton>
         </ListItem>
       ))}
     </List>
