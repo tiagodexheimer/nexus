@@ -32,7 +32,8 @@ const menuItems = [
 
 const logoSrc = "/logo.png";
 
-const Header: React.FC<HeaderProps> = ({ isLoggedIn, onLoginSuccess, onLogout }) => {
+
+const Header = ({ isLoggedIn, onLoginSuccess, onLogout }: HeaderProps): JSX.Element => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
