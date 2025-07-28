@@ -1,5 +1,5 @@
 // src/components/Layout.tsx
-import React from 'react';
+import React, { type JSX } from 'react';
 import { Box, CssBaseline } from '@mui/material';
 import Header from './Header.tsx';
 import Sidebar from './Sidebar';
@@ -11,7 +11,7 @@ interface LayoutProps {
   onLogout: () => void;
 }
 
-const Layout = ({ children, isLoggedIn, onLoginSuccess, onLogout }: LayoutProps) => {
+const Layout = ({ children, isLoggedIn, onLoginSuccess, onLogout }: LayoutProps): JSX.Element => {
   return (
     <>
       <CssBaseline />
