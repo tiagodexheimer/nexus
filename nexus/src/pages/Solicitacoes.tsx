@@ -14,6 +14,8 @@ import SolicitacaoCard from '../components/SolicitacaoCard';
 import NovaSolicitacaoDialog from '../components/NovaSolicitacaoDialog';
 import CriarRotaDialog from '../components/CriarRotaDialog';
 import ConfirmacaoDialog from '../components/ConfirmacaoDialog';
+import EditarSolicitacaoDialog from '../components/EditarSolicitacaoDialog';
+import DetalhesSolicitacaoDialog from '../components/DetalhesSolicitacaoDialog';
 import type { Solicitacao } from '../types';
 import mapaExemplo from '../assets/mapa-exemplo.jpg';
 
@@ -51,6 +53,10 @@ const Solicitacoes: React.FC = () => {
   const [confirmacaoMessage, setConfirmacaoMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSolicitacoes, setSelectedSolicitacoes] = useState<string[]>([]);
+  const [solicitacaoParaEditar, setSolicitacaoParaEditar] = useState<Solicitacao | null>(null);
+  const [editarDialogOpen, setEditarDialogOpen] = useState(false);
+  const [solicitacaoParaVer, setSolicitacaoParaVer] = useState<Solicitacao | null>(null);
+  const [detalhesDialogOpen, setDetalhesDialogOpen] = useState(false);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabIndex(newValue);
@@ -78,9 +84,33 @@ const Solicitacoes: React.FC = () => {
     setSelectedSolicitacoes(prev => prev.filter(selectedId => selectedId !== id));
   };
   
-  const handleVerDetalhes = (id: string) => {
-    console.log("Ver detalhes da solicitação:", id);
-    alert(`Detalhes da Solicitação: ${id}`);
+  const handleOpenEditarDialog = (solicitacao: Solicitacao) => {
+    setSolicitacaoParaEditar(solicitacao);
+    setEditarDialogOpen(true);
+  };
+
+  const handleCloseEditarDialog = () => {
+    setEditarDialogOpen(false);
+    setSolicitacaoParaEditar(null);
+  };
+
+  const handleSaveEdicao = (solicitacaoEditada: Solicitacao) => {
+    setSolicitacoes(prev => 
+      prev.map(s => s.id === solicitacaoEditada.id ? solicitacaoEditada : s)
+    );
+    handleCloseEditarDialog();
+    setConfirmacaoMessage(`Solicitação ${solicitacaoEditada.id} atualizada com sucesso.`);
+    setConfirmacaoDialogOpen(true);
+  };
+
+  const handleOpenDetalhesDialog = (solicitacao: Solicitacao) => {
+    setSolicitacaoParaVer(solicitacao);
+    setDetalhesDialogOpen(true);
+  };
+
+  const handleCloseDetalhesDialog = () => {
+    setDetalhesDialogOpen(false);
+    setSolicitacaoParaVer(null);
   };
 
   const handleSelectSolicitacao = (id: string) => {
@@ -135,7 +165,8 @@ const Solicitacoes: React.FC = () => {
             key={solicitacao.id}
             solicitacao={solicitacao}
             onRemove={handleRemoveSolicitacao}
-            onVerDetalhes={handleVerDetalhes}
+            onEditar={handleOpenEditarDialog}
+            onVerDetalhes={handleOpenDetalhesDialog}
             isSelected={selectedSolicitacoes.includes(solicitacao.id)}
             onSelect={handleSelectSolicitacao}
           />
@@ -228,6 +259,19 @@ const Solicitacoes: React.FC = () => {
         onClose={handleCloseConfirmacaoDialog}
         title="Sucesso!"
         message={confirmacaoMessage}
+      />
+
+      <EditarSolicitacaoDialog
+        open={editarDialogOpen}
+        onClose={handleCloseEditarDialog}
+        solicitacao={solicitacaoParaEditar}
+        onSave={handleSaveEdicao}
+      />
+
+      <DetalhesSolicitacaoDialog
+        open={detalhesDialogOpen}
+        onClose={handleCloseDetalhesDialog}
+        solicitacao={solicitacaoParaVer}
       />
     </Box>
   );
