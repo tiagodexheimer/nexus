@@ -11,7 +11,8 @@ export interface Solicitacao {
   rua: string;
   bairro: string;
   descricao: string;
-  status: 'Aguardando Agendamento' | 'Agendado Vistoria' | 'Em Rota';
+  // Status atualizados conforme solicitado
+  status: 'Sem rota' | 'Aguardando agendamento' | 'Agendado' | 'Em rota' | 'Concluído';
   mapaUrl: string;
-  anexos: File[]; // Adicionado para guardar as fotos ou PDFs
+  anexos: File[];
 }
