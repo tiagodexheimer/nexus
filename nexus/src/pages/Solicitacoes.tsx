@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 
-// Define o tipo para o status, incluindo "Concluído"
+// Corrigido: Adicionado "Concluído" ao tipo Status
 type Status = "Aguardando Agendamento" | "Agendado Vistoria" | "Em Rota" | "Concluído";
 
 // Define a interface para uma solicitação
@@ -32,7 +32,7 @@ interface Solicitacao {
   status: Status;
 }
 
-// Dados de exemplo
+// Dados de exemplo, incluindo o status "Concluído"
 const mockSolicitacoes: Solicitacao[] = [
     { id: 1, protocolo: "001-2023", data: "2023-10-26", proprietario: "João Silva", status: "Aguardando Agendamento" },
     { id: 2, protocolo: "002-2023", data: "2023-10-25", proprietario: "Maria Oliveira", status: "Agendado Vistoria" },
@@ -44,6 +44,7 @@ const mockSolicitacoes: Solicitacao[] = [
     { id: 8, protocolo: "008-2023", data: "2023-10-19", proprietario: "Fernanda Almeida", status: "Concluído" },
 ];
 
+// Adicionado a cor para o status "Concluído"
 const statusColors: Record<Status, "default" | "warning" | "info" | "success"> = {
   "Aguardando Agendamento": "default",
   "Agendado Vistoria": "warning",
@@ -54,10 +55,11 @@ const statusColors: Record<Status, "default" | "warning" | "info" | "success"> =
 const Solicitacoes = () => {
   const [tabIndex, setTabIndex] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-  const [solicitacoes, setSolicitacoes] = useState<Solicitacao[]>(mockSolicitacoes);
+  const [solicitacoes] = useState<Solicitacao[]>(mockSolicitacoes); // Removido setSolicitacoes se não for usado para alterar
   const [selectedSolicitacao, setSelectedSolicitacao] = useState<Solicitacao | null>(null);
 
-  const handleTabChange = (newValue: number) => {
+  // Corrigido: Removido o parâmetro 'event' não utilizado
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setTabIndex(newValue);
   };
 
@@ -121,7 +123,7 @@ const Solicitacoes = () => {
       </Box>
 
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={tabIndex} onChange={(_, newValue) => handleTabChange(newValue)} aria-label="abas de solicitações">
+        <Tabs value={tabIndex} onChange={handleTabChange} aria-label="abas de solicitações">
           <Tab label={`Aguardando Agendamento (${agendamento.length})`} />
           <Tab label={`Agendado Vistoria (${vistoria.length})`} />
           <Tab label={`Em Rota (${rota.length})`} />
