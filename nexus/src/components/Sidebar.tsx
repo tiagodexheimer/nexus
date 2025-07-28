@@ -1,8 +1,17 @@
 // nexus/src/components/Sidebar.tsx
 import React from 'react';
-import { Box, List, ListItem, ListItemButton, ListItemText } from '@mui/material';
-import { useLocation, Link as RouterLink } from 'react-router-dom';
+import { Box, List, ListItem, ListItemButton, ListItemText, useTheme } from '@mui/material'; // Importar useTheme
+import { Link as RouterLink } from 'react-router-dom';
 
+// Define os itens de navegação principais
+const mainMenuItems = [
+  { text: 'Dashboard', path: '/dashboard' },
+  { text: 'Solicitações', path: '/solicitacoes' },
+  { text: 'Rotas', path: '/rotas' },
+  { text: 'Relatórios', path: '/relatorios' },
+];
+
+// Define os itens do menu de gerenciamento
 const gerenciarMenuItems = [
   { text: 'Gerenciar Espécies', path: '/gerenciar/especies' },
   { text: 'Gerenciar Formulários', path: '/gerenciar/formularios' },
@@ -13,30 +22,37 @@ const gerenciarMenuItems = [
 ];
 
 const Sidebar: React.FC = () => {
-  const location = useLocation();
-  const isGerenciarPage = location.pathname.startsWith('/gerenciar');
+  const theme = useTheme(); // Obtenha o tema para acessar os mixins
 
   return (
     <Box
-      component="nav"
       sx={{
-        width: 240,
-        flexShrink: 0,
-        backgroundColor: '#654321', // Marrom Casca de Árvore
-        color: 'white',
+        width: '100%',
+        // A cor de fundo e a cor do texto são definidas no Drawer em Layout.tsx
       }}
     >
-      {isGerenciarPage && (
-        <List>
-          {gerenciarMenuItems.map((item) => (
+      {/* Espaçador para empurrar o conteúdo para baixo da AppBar fixa. */}
+      {/* Isso cria uma Box com a altura mínima da toolbar, evitando a sobreposição. */}
+      <Box sx={theme.mixins.toolbar} />
+
+      <List>
+        {/* Renderiza os itens de navegação principais */}
+        {mainMenuItems.map((item) => (
             <ListItem key={item.text} disablePadding>
               <ListItemButton component={RouterLink} to={item.path}>
                 <ListItemText primary={item.text} />
               </ListItemButton>
             </ListItem>
-          ))}
-        </List>
-      )}
+        ))}
+        {/* Renderiza todos os itens de "Gerenciar" */}
+        {gerenciarMenuItems.map((item) => (
+          <ListItem key={item.text} disablePadding>
+            <ListItemButton component={RouterLink} to={item.path}>
+              <ListItemText primary={item.text} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
     </Box>
   );
 };
