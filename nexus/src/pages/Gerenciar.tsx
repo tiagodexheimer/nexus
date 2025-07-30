@@ -58,7 +58,7 @@ const Gerenciar: React.FC = () => (
     <Grid container spacing={4}>
       {managementOptions.map((option) => (
         // The 'container' prop should not be used on a Grid item. The 'item' prop is sufficient.
-        <Grid item key={option.title} xs={12} sm={6} md={4}>
+        <Grid sx={{ gridColumn: { xs: 'span 12', sm: 'span 6', md: 'span 4' } }} key={option.title}>
           <Card sx={{ height: '100%' }}>
             <CardActionArea component={RouterLink} to={option.path} sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
               <CardContent sx={{ textAlign: 'center' }}>

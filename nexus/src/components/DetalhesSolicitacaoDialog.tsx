@@ -47,7 +47,7 @@ const DetalhesSolicitacaoDialog: React.FC<DetalhesSolicitacaoDialogProps> = ({ o
       <DialogContent dividers>
         <Grid container spacing={2}>
           {/* Added component="div" to Grid item */}
-          <Grid item xs={12} md={6} component="div">
+          <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
             {/* Box adicionado para limitar a altura da imagem */}
             <Box sx={{ maxHeight: '350px', overflow: 'hidden', borderRadius: '4px' }}>
               <img
@@ -58,7 +58,7 @@ const DetalhesSolicitacaoDialog: React.FC<DetalhesSolicitacaoDialogProps> = ({ o
             </Box>
           </Grid>
           {/* Added component="div" to Grid item */}
-          <Grid item xs={12} md={6} component="div">
+          <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
             <Typography variant="h6">{solicitacao.rua}</Typography>
             <Typography variant="subtitle1" color="text.secondary" gutterBottom>{solicitacao.bairro}</Typography>
             <Box sx={{ my: 2 }}>
