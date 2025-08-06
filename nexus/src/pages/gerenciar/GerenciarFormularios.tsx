@@ -7,6 +7,7 @@ import {
   type DragEndEvent,
   type DragStartEvent,
   DragOverlay,
+  type DragOverEvent,
   closestCenter,
 } from '@dnd-kit/core';
 import {
@@ -100,16 +101,19 @@ const renderPreviewField = (field: FormField, register: any) => {
 }
 
 // Componente para um item ordenável no canvas, agora com a visualização real
-const SortablePreviewField = ({ field, register }: { field: FormField, register: any }) => {
+const SortablePreviewField = ({ field, register, overId }: { field: FormField, register: any, overId: string | null }) => {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: field.id });
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.5 : 1,
     };
+    
+    const isBeingHovered = overId === field.id && !isDragging;
 
     return (
-        <div ref={setNodeRef} style={style} className="flex items-center mb-4 bg-white p-2 rounded-lg border">
+        <div ref={setNodeRef} style={style} className="relative flex items-center mb-4 bg-white p-2 rounded-lg border">
+            {isBeingHovered && <div className="absolute -top-1 left-0 right-0 h-1 bg-blue-500 rounded-full z-10" />}
             <div {...attributes} {...listeners} className="cursor-grab touch-none p-2">
                 <DragHandleIcon />
             </div>
@@ -121,7 +125,7 @@ const SortablePreviewField = ({ field, register }: { field: FormField, register:
     );
 };
 
-const FormCanvas = ({ fields, isDraggingPaletteItem }: { fields: FormField[], isDraggingPaletteItem: boolean }) => {
+const FormCanvas = ({ fields, isDraggingPaletteItem, overId }: { fields: FormField[], isDraggingPaletteItem: boolean, overId: string | null }) => {
   const { setNodeRef } = useDroppable({ id: 'form-canvas' });
   const { register, handleSubmit } = useForm();
   const onSubmit = (data: any) => {
@@ -139,7 +143,7 @@ const FormCanvas = ({ fields, isDraggingPaletteItem }: { fields: FormField[], is
             <form ref={setNodeRef} onSubmit={handleSubmit(onSubmit)} className={dropZoneStyle}>
               <SortableContext items={fields} strategy={verticalListSortingStrategy}>
                 {fields.length > 0 
-                    ? fields.map((field) => <SortablePreviewField key={field.id} field={field} register={register} />)
+                    ? fields.map((field) => <SortablePreviewField key={field.id} field={field} register={register} overId={overId} />)
                     : <div className="h-full flex items-center justify-center"><p className="text-gray-500 text-center p-4">Arraste os componentes para cá ou clique no '+' para adicionar.</p></div>
                 }
               </SortableContext>
@@ -174,6 +178,7 @@ const DeleteArea = () => {
 export default function GerenciarFormularios() {
   const [fields, setFields] = useState<FormField[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [overId, setOverId] = useState<string | null>(null);
   const [isDraggingPaletteItem, setIsDraggingPaletteItem] = useState(false);
 
   const handleAddItem = (type: FormField['type'], label: string) => {
@@ -194,9 +199,15 @@ export default function GerenciarFormularios() {
     }
   };
 
+  const handleDragOver = (event: DragOverEvent) => {
+    const { over } = event;
+    setOverId(over ? (over.id as string) : null);
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     setActiveId(null);
+    setOverId(null);
     setIsDraggingPaletteItem(false);
 
     if (!over) return;
@@ -207,7 +218,7 @@ export default function GerenciarFormularios() {
     }
     
     // Adicionar novo campo da paleta
-    if (active.id.startsWith('palette-')) {
+    if (String(active.id).startsWith('palette-')) {
         const { type, label } = active.data.current || {};
         const newField: FormField = {
             id: nanoid(),
@@ -260,7 +271,7 @@ export default function GerenciarFormularios() {
   const activePaletteItem = PALETTE_COMPONENTS.find(p => `palette-${p.type}` === activeId);
 
   return (
-    <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
+    <DndContext onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
       <div className="p-8 font-sans bg-gray-50 min-h-screen">
         <h1 className="text-3xl font-bold mb-6 text-center">Editor de Formulários Drag & Drop</h1>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -284,7 +295,7 @@ export default function GerenciarFormularios() {
           </div>
           <div className="lg:col-span-2">
             <h2 className="text-xl font-semibold mb-4">Área de Construção</h2>
-            <FormCanvas fields={fields} isDraggingPaletteItem={isDraggingPaletteItem} />
+            <FormCanvas fields={fields} isDraggingPaletteItem={isDraggingPaletteItem} overId={overId} />
           </div>
         </div>
       </div>
