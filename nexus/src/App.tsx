@@ -1,8 +1,7 @@
 // nexus/src/App.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CssBaseline, ThemeProvider as MuiThemeProvider } from '@mui/material';
 import { Routes, Route } from 'react-router-dom';
-// O ChakraProvider foi removido daqui
 import Layout from './components/Layout';
 import muiTheme from './styles/theme';
 import Dashboard from './pages/Dashboard';
@@ -19,7 +18,17 @@ import GerenciarTiposVistoria from './pages/gerenciar/GerenciarTiposVistoria';
 import GerenciarUsuarios from './pages/gerenciar/GerenciarUsuarios';
 
 const App: React.FC = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // Inicializa o estado de login a partir do localStorage.
+  // A função dentro do useState só é executada na primeira renderização.
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return localStorage.getItem('isLoggedIn') === 'true';
+  });
+
+  // useEffect é usado para sincronizar o estado 'isLoggedIn' com o localStorage.
+  // Toda vez que 'isLoggedIn' mudar, este código será executado.
+  useEffect(() => {
+    localStorage.setItem('isLoggedIn', String(isLoggedIn));
+  }, [isLoggedIn]);
 
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
@@ -27,10 +36,11 @@ const App: React.FC = () => {
 
   const handleLogout = () => {
     setIsLoggedIn(false);
+    // Garante que o estado seja removido do localStorage ao sair.
+    localStorage.removeItem('isLoggedIn');
   };
 
   return (
-    // Apenas o MuiThemeProvider permanece aqui
     <MuiThemeProvider theme={muiTheme}>
       <CssBaseline />
       <Layout
@@ -56,10 +66,12 @@ const App: React.FC = () => {
               <Route path="/gerenciar/tipos-vistoria" element={<GerenciarTiposVistoria />} />
               <Route path="/gerenciar/usuarios" element={<GerenciarUsuarios />} />
               <Route path="/sobre" element={<SobrePage />} />
+              {/* Rota padrão quando logado */}
               <Route path="/" element={<Dashboard />} />
             </>
           ) : (
             <>
+              {/* Se não estiver logado, qualquer rota leva para a página "Sobre" */}
               <Route path="/*" element={<SobrePage />} />
             </>
           )}

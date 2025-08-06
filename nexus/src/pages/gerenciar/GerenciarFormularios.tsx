@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   DndContext,
@@ -18,6 +18,31 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { nanoid } from 'nanoid';
+import {
+  Box,
+  Tabs,
+  Tab,
+  Typography,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  IconButton,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  TextField
+} from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+
 
 // --- ÍCONES ---
 const TrashIcon = () => (
@@ -49,12 +74,54 @@ interface FormField {
   options?: string[];
 }
 
+interface MockForm {
+    id: string;
+    name: string;
+    description: string;
+    lastModified: string;
+    fields: FormField[];
+}
+
 const PALETTE_COMPONENTS = [
   { type: 'text' as const, label: 'Campo de Texto' },
   { type: 'email' as const, label: 'Campo de Email' },
   { type: 'select' as const, label: 'Caixa de Seleção' },
   { type: 'checkbox' as const, label: 'Checkbox' },
   { type: 'multiselect' as const, label: 'Seleção Múltipla' },
+];
+
+const initialMockForms: MockForm[] = [
+    { 
+        id: 'FORM-001', 
+        name: 'Laudo de Vistoria Padrão', 
+        description: 'Formulário completo para vistorias de rotina.', 
+        lastModified: '2025-08-05',
+        fields: [
+            { id: nanoid(), type: 'text', label: 'Endereço', placeholder: 'Rua, Número, Bairro' },
+            { id: nanoid(), type: 'select', label: 'Tipo de Vistoria', options: ['Poda', 'Supressão', 'Análise'] },
+            { id: nanoid(), type: 'checkbox', label: 'Risco Iminente?' },
+        ]
+    },
+    { 
+        id: 'FORM-002', 
+        name: 'Solicitação de Supressão', 
+        description: 'Formulário simplificado para pedidos de supressão.', 
+        lastModified: '2025-07-28',
+        fields: [
+            { id: nanoid(), type: 'text', label: 'Nome do Solicitante', placeholder: 'Nome completo' },
+            { id: nanoid(), type: 'email', label: 'Email de Contato', placeholder: 'exemplo@email.com' },
+        ]
+    },
+    { 
+        id: 'FORM-003', 
+        name: 'Análise de Risco', 
+        description: 'Checklist para análise de risco de queda de árvores.', 
+        lastModified: '2025-06-15',
+        fields: [
+            { id: nanoid(), type: 'multiselect', label: 'Sinais de Risco', options: ['Galhos secos', 'Inclinação acentuada', 'Cavidades no tronco', 'Raízes expostas'] },
+            { id: nanoid(), type: 'checkbox', label: 'Requer ação imediata?' },
+        ]
+    },
 ];
 
 // --- COMPONENTES DO EDITOR ---
@@ -77,7 +144,6 @@ const PaletteItem = ({ type, label, onAdd }: { type: string; label: string; onAd
   );
 };
 
-// Componente visual puro para o campo (usado no DragOverlay)
 const FieldItem = ({ label, type }: { label: string, type: string }) => {
     return (
         <div className="p-3 bg-white border rounded-md shadow-lg">
@@ -100,7 +166,6 @@ const renderPreviewField = (field: FormField, register: any) => {
     }
 }
 
-// Componente para um item ordenável no canvas, agora com a visualização real
 const SortablePreviewField = ({ field, register, overId }: { field: FormField, register: any, overId: string | null }) => {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: field.id });
     const style = {
@@ -125,7 +190,7 @@ const SortablePreviewField = ({ field, register, overId }: { field: FormField, r
     );
 };
 
-const FormCanvas = ({ fields, isDraggingPaletteItem, overId }: { fields: FormField[], isDraggingPaletteItem: boolean, overId: string | null }) => {
+const FormCanvas = ({ fields, isDraggingPaletteItem, overId }: { fields: FormField[], isDraggingPaletteItem?: boolean, overId?: string | null }) => {
   const { setNodeRef } = useDroppable({ id: 'form-canvas' });
   const { register, handleSubmit } = useForm();
   const onSubmit = (data: any) => {
@@ -142,8 +207,8 @@ const FormCanvas = ({ fields, isDraggingPaletteItem, overId }: { fields: FormFie
           <div className="flex-grow p-2 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             <form ref={setNodeRef} onSubmit={handleSubmit(onSubmit)} className={dropZoneStyle}>
               <SortableContext items={fields} strategy={verticalListSortingStrategy}>
-                {fields.length > 0 
-                    ? fields.map((field) => <SortablePreviewField key={field.id} field={field} register={register} overId={overId} />)
+                {fields.length > 0
+                    ? fields.map((field) => <SortablePreviewField key={field.id} field={field} register={register} overId={overId ?? null} />)
                     : <div className="h-full flex items-center justify-center"><p className="text-gray-500 text-center p-4">Arraste os componentes para cá ou clique no '+' para adicionar.</p></div>
                 }
               </SortableContext>
@@ -176,10 +241,20 @@ const DeleteArea = () => {
 // --- COMPONENTE PRINCIPAL ---
 
 export default function GerenciarFormularios() {
+  const [tabIndex, setTabIndex] = useState(0);
   const [fields, setFields] = useState<FormField[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
   const [isDraggingPaletteItem, setIsDraggingPaletteItem] = useState(false);
+
+  // State for forms management
+  const [forms, setForms] = useState<MockForm[]>(initialMockForms);
+  const [formToView, setFormToView] = useState<MockForm | null>(null);
+  const [formToDelete, setFormToDelete] = useState<MockForm | null>(null);
+
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+    setTabIndex(newValue);
+  };
 
   const handleAddItem = (type: FormField['type'], label: string) => {
     const newField: FormField = {
@@ -217,7 +292,6 @@ export default function GerenciarFormularios() {
         return;
     }
     
-    // Adicionar novo campo da paleta
     if (String(active.id).startsWith('palette-')) {
         const { type, label } = active.data.current || {};
         const newField: FormField = {
@@ -231,20 +305,17 @@ export default function GerenciarFormularios() {
         const overIndex = fields.findIndex((f) => f.id === over.id);
 
         if (overIndex !== -1) {
-            // Soltou sobre um item existente, insere na posição
             setFields((currentFields) => {
                 const newFields = [...currentFields];
                 newFields.splice(overIndex, 0, newField);
                 return newFields;
             });
         } else {
-            // Soltou no canvas vazio ou em outro lugar, adiciona no final
             setFields((currentFields) => [...currentFields, newField]);
         }
         return;
     }
     
-    // Reordenar campos existentes
     const activeId = active.id;
     const overId = over.id;
     if (activeId !== overId) {
@@ -263,53 +334,153 @@ export default function GerenciarFormularios() {
       return;
     }
     const jsonConfig = JSON.stringify(fields, null, 2);
+    // Here you would typically save the new/updated form configuration
     alert("Configuração do Formulário (JSON):\n\n" + jsonConfig);
-    console.log(jsonConfig); // Loga no console para facilitar a cópia
+    console.log(jsonConfig);
+    // Potentially add the new form to the `forms` state and switch back to the list view
   };
 
   const activeField = fields.find(f => f.id === activeId);
   const activePaletteItem = PALETTE_COMPONENTS.find(p => `palette-${p.type}` === activeId);
 
+  // Handlers for form management
+  const handleOpenViewDialog = (form: MockForm) => setFormToView(form);
+  const handleCloseViewDialog = () => setFormToView(null);
+
+  const handleEditForm = (form: MockForm) => {
+    setFields(form.fields);
+    setTabIndex(1);
+  };
+
+  const handleOpenDeleteDialog = (form: MockForm) => setFormToDelete(form);
+  const handleCloseDeleteDialog = () => setFormToDelete(null);
+
+  const handleConfirmDelete = () => {
+    if (formToDelete) {
+      setForms(forms.filter(f => f.id !== formToDelete.id));
+      handleCloseDeleteDialog();
+    }
+  };
+
   return (
-    <DndContext onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
-      <div className="p-8 font-sans bg-gray-50 min-h-screen">
-        <h1 className="text-3xl font-bold mb-6 text-center">Criador de Formulários</h1>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-1">
-            <h2 className="text-xl font-semibold mb-4">Componentes</h2>
-            {PALETTE_COMPONENTS.map((comp) => (
-              <PaletteItem 
-                key={comp.type} 
-                type={comp.type} 
-                label={comp.label}
-                onAdd={() => handleAddItem(comp.type, comp.label)} 
-              />
-            ))}
-            <DeleteArea />
-            <button
-              onClick={handleSaveConfiguration}
-              className="w-full mt-4 px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700"
-            >
-              Salvar Configuração
-            </button>
-          </div>
-          <div className="lg:col-span-2">
-            <h2 className="text-xl font-semibold mb-4">Área de Construção</h2>
-            <FormCanvas fields={fields} isDraggingPaletteItem={isDraggingPaletteItem} overId={overId} />
-          </div>
-        </div>
-      </div>
-      <DragOverlay>
-        {activeId ? (
-          activeField ? (
-            <FieldItem label={activeField.label} type={activeField.type} />
-          ) : activePaletteItem ? (
-            <div className="p-4 mb-2 bg-white border rounded-md shadow-lg cursor-grabbing">
-                {activePaletteItem.label}
-            </div>
-          ) : null
-        ) : null}
-      </DragOverlay>
-    </DndContext>
+    <Box sx={{ p: 3 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+            Gerenciar Formulários
+        </Typography>
+
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+            <Tabs value={tabIndex} onChange={handleTabChange} aria-label="abas de formulários">
+                <Tab label="Meus Formulários" />
+                <Tab label="Editor de Formulário" />
+            </Tabs>
+        </Box>
+
+        {/* Aba Meus Formulários */}
+        {tabIndex === 0 && (
+            <Paper sx={{ p: 2 }}>
+                <TableContainer>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Nome do Formulário</TableCell>
+                                <TableCell>Descrição</TableCell>
+                                <TableCell>Última Modificação</TableCell>
+                                <TableCell align="right">Ações</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {forms.map((form) => (
+                                <TableRow key={form.id}>
+                                    <TableCell component="th" scope="row">{form.name}</TableCell>
+                                    <TableCell>{form.description}</TableCell>
+                                    <TableCell>{new Date(form.lastModified).toLocaleDateString()}</TableCell>
+                                    <TableCell align="right">
+                                        <IconButton size="small" aria-label="visualizar" onClick={() => handleOpenViewDialog(form)}>
+                                            <VisibilityIcon />
+                                        </IconButton>
+                                        <IconButton size="small" aria-label="editar" onClick={() => handleEditForm(form)}>
+                                            <EditIcon />
+                                        </IconButton>
+                                        <IconButton size="small" aria-label="deletar" onClick={() => handleOpenDeleteDialog(form)}>
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </Paper>
+        )}
+
+        {/* Aba Editor de Formulário */}
+        {tabIndex === 1 && (
+            <DndContext onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div className="lg:col-span-1">
+                        <h2 className="text-xl font-semibold mb-4">Componentes</h2>
+                        {PALETTE_COMPONENTS.map((comp) => (
+                        <PaletteItem 
+                            key={comp.type} 
+                            type={comp.type} 
+                            label={comp.label}
+                            onAdd={() => handleAddItem(comp.type, comp.label)} 
+                        />
+                        ))}
+                        <DeleteArea />
+                        <Button
+                            onClick={handleSaveConfiguration}
+                            variant="contained"
+                            color="primary"
+                            fullWidth
+                            sx={{ mt: 2 }}
+                        >
+                            Salvar Formulário
+                        </Button>
+                    </div>
+                    <div className="lg:col-span-2">
+                        <h2 className="text-xl font-semibold mb-4">Área de Construção</h2>
+                        <FormCanvas fields={fields} isDraggingPaletteItem={isDraggingPaletteItem} overId={overId} />
+                    </div>
+                </div>
+                <DragOverlay>
+                    {activeId ? (
+                    activeField ? (
+                        <FieldItem label={activeField.label} type={activeField.type} />
+                    ) : activePaletteItem ? (
+                        <div className="p-4 mb-2 bg-white border rounded-md shadow-lg cursor-grabbing">
+                            {activePaletteItem.label}
+                        </div>
+                    ) : null
+                    ) : null}
+                </DragOverlay>
+            </DndContext>
+        )}
+
+        {/* Dialog para Visualizar Formulário */}
+        <Dialog open={!!formToView} onClose={handleCloseViewDialog} maxWidth="sm" fullWidth>
+            <DialogTitle>Visualizar Formulário: {formToView?.name}</DialogTitle>
+            <DialogContent>
+                {formToView && <FormCanvas fields={formToView.fields} />}
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleCloseViewDialog}>Fechar</Button>
+            </DialogActions>
+        </Dialog>
+
+        {/* Dialog para Confirmar Exclusão */}
+        <Dialog open={!!formToDelete} onClose={handleCloseDeleteDialog}>
+            <DialogTitle>Confirmar Exclusão</DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    Tem certeza que deseja excluir o formulário "{formToDelete?.name}"? Essa ação não pode ser desfeita.
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleCloseDeleteDialog}>Cancelar</Button>
+                <Button onClick={handleConfirmDelete} color="error">Excluir</Button>
+            </DialogActions>
+        </Dialog>
+    </Box>
   );
 }
