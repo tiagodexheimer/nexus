@@ -27,5 +27,5 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src"] // Garante que a pasta 'src' seja incluída
+  "include": ["src", "src/run-init-db.ts"] // Garante que a pasta 'src' seja incluída
 }
