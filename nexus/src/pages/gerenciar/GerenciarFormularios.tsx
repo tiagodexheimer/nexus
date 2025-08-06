@@ -11,7 +11,7 @@ import {
   Select,
   Textarea,
   Icon,
-  useToast,
+  toast, // CORREÇÃO: Importe 'toast' em vez de 'useToast'
 } from '@chakra-ui/react';
 import {
   DragDropContext,
@@ -78,7 +78,6 @@ const RenderedFormField = ({ field, isPreview }: { field: FormField, isPreview?:
 const GerenciarFormularios = () => {
   // Estado para armazenar os campos que foram soltos no celular
   const [formFields, setFormFields] = useState<FormField[]>([]);
-  const toast = useToast();
 
   // Função para remover um campo do formulário
   const removeField = (idToRemove: string) => {
@@ -129,8 +128,6 @@ const GerenciarFormularios = () => {
       description: 'A estrutura do formulário foi salva com sucesso.',
       status: 'success',
       duration: 5000,
-      isClosable: true,
-      position: 'top-right',
     });
   };
 

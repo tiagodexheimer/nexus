@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { CssBaseline, ThemeProvider as MuiThemeProvider } from '@mui/material';
 import { Routes, Route } from 'react-router-dom';
+import { ChakraProvider, Toaster } from '@chakra-ui/react';
 import Layout from './components/Layout';
 import theme from './styles/theme';
 import Dashboard from './pages/Dashboard';
@@ -10,7 +11,6 @@ import Rotas from './pages/Rotas';
 import Relatorios from './pages/Relatorios';
 import Gerenciar from './pages/Gerenciar';
 import SobrePage from './pages/Sobre';
-import { ChakraProvider } from '@chakra-ui/react';
 // Importe os novos componentes
 import GerenciarEspecies from './pages/gerenciar/GerenciarEspecies';
 import GerenciarFormularios from './pages/gerenciar/GerenciarFormularios';
@@ -50,7 +50,14 @@ const App: React.FC = () => {
               {/* Adicione as novas rotas de gerenciamento aqui */}
               <Route path="/gerenciar/especies" element={<GerenciarEspecies />} />
               <Route
-                path="/ger
+                path="/gerenciar/formularios"
+                element={
+                  <ChakraProvider>
+                    <GerenciarFormularios />
+                    <Toaster position="top-right" />
+                  </ChakraProvider>
+                }
+              />
               <Route path="/gerenciar/rotas" element={<GerenciarRotas />} />
               <Route path="/gerenciar/status" element={<GerenciarStatus />} />
               <Route path="/gerenciar/tipos-vistoria" element={<GerenciarTiposVistoria />} />
@@ -67,7 +74,7 @@ const App: React.FC = () => {
           )}
         </Routes>
       </Layout>
-    </ThemeProvider>
+    </MuiThemeProvider>
   );
 };
 
