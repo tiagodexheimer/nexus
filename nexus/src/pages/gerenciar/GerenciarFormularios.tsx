@@ -10,9 +10,9 @@ import {
   Select,
   Textarea,
   Icon,
+  ChakraProvider, // Importe o ChakraProvider aqui
+  Checkbox,
 } from '@chakra-ui/react';
-import { Checkbox } from '@chakra-ui/react';
-import { useToast } from '@chakra-ui/react';
 import {
   DragDropContext,
   Droppable,
@@ -71,8 +71,8 @@ const RenderedFormField = ({ field, isPreview }: { field: FormField, isPreview?:
   }
 };
 
-// --- PÁGINA PRINCIPAL DO GERENCIADOR DE FORMULÁRIOS ---
-const GerenciarFormularios = () => {
+// --- COMPONENTE PRINCIPAL ---
+const FormBuilder = () => {
   const [formFields, setFormFields] = useState<FormField[]>([]);
   const toast = useToast();
 
@@ -272,6 +272,14 @@ const GerenciarFormularios = () => {
       </Box>
     </DragDropContext>
   );
-};
+}
+
+// --- Componente Wrapper que exportamos ---
+const GerenciarFormularios = () => (
+  <ChakraProvider>
+    <FormBuilder />
+  </ChakraProvider>
+);
+
 
 export default GerenciarFormularios;
