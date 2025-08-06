@@ -2,9 +2,9 @@
 import React, { useState } from 'react';
 import { CssBaseline, ThemeProvider as MuiThemeProvider } from '@mui/material';
 import { Routes, Route } from 'react-router-dom';
-import { ChakraProvider, Toaster } from '@chakra-ui/react';
+import { ChakraProvider } from '@chakra-ui/react';
 import Layout from './components/Layout';
-import theme from './styles/theme';
+import muiTheme from './styles/theme';
 import Dashboard from './pages/Dashboard';
 import Solicitacoes from './pages/Solicitacoes';
 import Rotas from './pages/Rotas';
@@ -19,7 +19,6 @@ import GerenciarStatus from './pages/gerenciar/GerenciarStatus';
 import GerenciarTiposVistoria from './pages/gerenciar/GerenciarTiposVistoria';
 import GerenciarUsuarios from './pages/gerenciar/GerenciarUsuarios';
 
-
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -32,48 +31,42 @@ const App: React.FC = () => {
   };
 
   return (
-    <MuiThemeProvider theme={theme}>
-      <CssBaseline />
-      <Layout
-        isLoggedIn={isLoggedIn}
-        onLoginSuccess={handleLoginSuccess}
-        onLogout={handleLogout}
-      >
-        <Routes>
-          {isLoggedIn ? (
-            <>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/solicitacoes" element={<Solicitacoes />} />
-              <Route path="/rotas" element={<Rotas />} />
-              <Route path="/relatorios" element={<Relatorios />} />
-              <Route path="/gerenciar" element={<Gerenciar />} />
-              {/* Adicione as novas rotas de gerenciamento aqui */}
-              <Route path="/gerenciar/especies" element={<GerenciarEspecies />} />
-              <Route
-                path="/gerenciar/formularios"
-                element={
-                  <ChakraProvider>
-                    <GerenciarFormularios />
-                    <Toaster position="top-right" />
-                  </ChakraProvider>
-                }
-              />
-              <Route path="/gerenciar/rotas" element={<GerenciarRotas />} />
-              <Route path="/gerenciar/status" element={<GerenciarStatus />} />
-              <Route path="/gerenciar/tipos-vistoria" element={<GerenciarTiposVistoria />} />
-              <Route path="/gerenciar/usuarios" element={<GerenciarUsuarios />} />
-              <Route path="/sobre" element={<SobrePage />} />
-              {/* Rota padrão para / quando logado */}
-              <Route path="/" element={<Dashboard />} />
-            </>
-          ) : (
-            <>
-                {/* Quando deslogado, todas as rotas levam para a página Sobre, que agora tem o cadastro */}
+    <MuiThemeProvider theme={muiTheme}>
+      <ChakraProvider>
+        <CssBaseline />
+        <Layout
+          isLoggedIn={isLoggedIn}
+          onLoginSuccess={handleLoginSuccess}
+          onLogout={handleLogout}
+        >
+          <Routes>
+            {isLoggedIn ? (
+              <>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/solicitacoes" element={<Solicitacoes />} />
+                <Route path="/rotas" element={<Rotas />} />
+                <Route path="/relatorios" element={<Relatorios />} />
+                <Route path="/gerenciar" element={<Gerenciar />} />
+                <Route path="/gerenciar/especies" element={<GerenciarEspecies />} />
+                <Route
+                  path="/gerenciar/formularios"
+                  element={<GerenciarFormularios />}
+                />
+                <Route path="/gerenciar/rotas" element={<GerenciarRotas />} />
+                <Route path="/gerenciar/status" element={<GerenciarStatus />} />
+                <Route path="/gerenciar/tipos-vistoria" element={<GerenciarTiposVistoria />} />
+                <Route path="/gerenciar/usuarios" element={<GerenciarUsuarios />} />
+                <Route path="/sobre" element={<SobrePage />} />
+                <Route path="/" element={<Dashboard />} />
+              </>
+            ) : (
+              <>
                 <Route path="/*" element={<SobrePage />} />
-            </>
-          )}
-        </Routes>
-      </Layout>
+              </>
+            )}
+          </Routes>
+        </Layout>
+      </ChakraProvider>
     </MuiThemeProvider>
   );
 };

@@ -1,16 +1,31 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ],
-    "compilerOptions": {
-      "jsx": "react-jsx",
-      "moduleResolution": "node",
-      "esModuleInterop": true,
-      "allowSyntheticDefaultImports": true,
-      "lib": ["dom", "dom.iterable", "esnext"], // Garanta que 'dom' esteja incluído
-      "types": ["react", "react-dom", "node"] // Garanta que 'react' esteja aqui
-  },
+  "compilerOptions": {
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
 
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx", // Correção principal para o erro de JSX runtime
+    "types": ["react", "react-dom"],
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true, // Adicionado para melhor compatibilidade com módulos
+    "allowSyntheticDefaultImports": true, // Adicionado para melhor compatibilidade
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["src"] // Garante que a pasta 'src' seja incluída
 }
