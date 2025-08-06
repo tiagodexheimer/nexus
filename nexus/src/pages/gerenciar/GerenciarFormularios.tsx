@@ -273,7 +273,7 @@ export default function GerenciarFormularios() {
   return (
     <DndContext onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
       <div className="p-8 font-sans bg-gray-50 min-h-screen">
-        <h1 className="text-3xl font-bold mb-6 text-center">Editor de Formulários Drag & Drop</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center">Criador de Formulários</h1>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-1">
             <h2 className="text-xl font-semibold mb-4">Componentes</h2>
