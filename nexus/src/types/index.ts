@@ -36,3 +36,11 @@ export interface User {
     email: string;
     role: UserRole;
 }
+export interface CampoFormulario {
+  id: string;
+  nome: string;
+  tipo: string;
+  obrigatorio: boolean;
+  ativo: boolean;
+}
+

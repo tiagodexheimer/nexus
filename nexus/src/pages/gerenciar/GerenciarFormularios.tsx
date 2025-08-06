@@ -1,285 +1,198 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import {
-  Box,
-  Heading,
-  Flex,
-  Text,
-  Button,
-  VStack,
-  Input,
-  Select,
-  Textarea,
-  Icon,
-  ChakraProvider, // Importe o ChakraProvider aqui
-  Checkbox,
-} from '@chakra-ui/react';
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  type DropResult,
-} from '@hello-pangea/dnd';
-import { FaGripVertical, FaTrash } from 'react-icons/fa';
+  DndContext,
+  useDraggable,
+  useDroppable,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import { nanoid } from 'nanoid'; // Para gerar IDs únicos
 
-// --- TIPOS ---
+// --- TIPOS E DADOS INICIAIS ---
+
+// Define a estrutura de um campo do formulário
 interface FormField {
   id: string;
-  type: FieldType;
+  type: 'text' | 'email' | 'select';
   label: string;
+  placeholder?: string;
+  options?: string[];
 }
 
-type FieldType = 'text' | 'textarea' | 'number' | 'checkbox' | 'select';
-
-// --- COMPONENTES DISPONÍVEIS PARA ARRASTAR ---
-const AVAILABLE_FIELDS: Omit<FormField, 'id'>[] = [
-  { type: 'text', label: 'Campo de Texto' },
-  { type: 'textarea', label: 'Área de Texto' },
-  { type: 'number', label: 'Campo Numérico' },
-  { type: 'checkbox', label: 'Caixa de Seleção' },
-  { type: 'select', label: 'Menu de Opções' },
+// Componentes disponíveis na paleta para o usuário arrastar
+const PALETTE_COMPONENTS = [
+  {
+    type: 'text' as const,
+    label: 'Campo de Texto',
+  },
+  {
+    type: 'email' as const,
+    label: 'Campo de Email',
+  },
+  {
+    type: 'select' as const,
+    label: 'Caixa de Seleção',
+  },
 ];
 
-// --- COMPONENTE PARA RENDERIZAR O CAMPO NO FORMULÁRIO ---
-const RenderedFormField = ({ field, isPreview }: { field: FormField, isPreview?: boolean }) => {
-  const commonProps = {
-    isReadOnly: isPreview,
-    placeholder: field.label,
-  };
+// --- COMPONENTES DO EDITOR ---
 
-  switch (field.type) {
-    case 'text':
-      return <Input {...commonProps} />;
-    case 'textarea':
-      return <Textarea {...commonProps} />;
-    case 'number':
-      return <Input type="number" {...commonProps} />;
-    case 'checkbox':
-      return (
-        <Checkbox isReadOnly={isPreview} colorScheme="green">
-          {field.label}
-        </Checkbox>
-      );
-    case 'select':
-      return (
-        <Select {...commonProps}>
-          <option>Opção 1</option>
-          <option>Opção 2</option>
-        </Select>
-      );
-    default:
-      return <Text>Campo desconhecido</Text>;
-  }
+/**
+ * 1. PALETA DE COMPONENTES
+ * Itens que o usuário pode arrastar para o formulário.
+ */
+const PaletteItem = ({ type, label }: { type: string; label: string }) => {
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: `palette-${type}`,
+    data: { type, label }, // Passa os dados do componente
+  });
+
+  const style = transform
+    ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+      }
+    : undefined;
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...listeners}
+      {...attributes}
+      className="p-4 mb-2 bg-white border rounded-md shadow-sm cursor-grab active:cursor-grabbing"
+    >
+      {label}
+    </div>
+  );
 };
 
-// --- COMPONENTE PRINCIPAL ---
-const FormBuilder = () => {
-  const [formFields, setFormFields] = useState<FormField[]>([]);
-  const toast = useToast();
+/**
+ * 2. CANVAS (ÁREA DE CONSTRUÇÃO)
+ * Área "droppable" onde os campos do formulário são soltos e renderizados.
+ */
+const FormCanvas = ({ fields }: { fields: FormField[] }) => {
+  const { setNodeRef } = useDroppable({
+    id: 'form-canvas',
+  });
 
-  const removeField = (idToRemove: string) => {
-    setFormFields((prevFields) => prevFields.filter((field) => field.id !== idToRemove));
+  return (
+    <div
+      ref={setNodeRef}
+      className="p-4 bg-gray-100 border-2 border-dashed rounded-lg min-h-[400px] w-full"
+    >
+      {fields.length === 0 ? (
+        <p className="text-gray-500 text-center mt-20">
+          Arraste os componentes da paleta para cá.
+        </p>
+      ) : (
+        fields.map((field) => (
+          <div key={field.id} className="p-3 mb-2 bg-white border rounded-md">
+            <label className="font-bold">{field.label}</label>
+            <p className="text-sm text-gray-600">Tipo: {field.type}</p>
+          </div>
+        ))
+      )}
+    </div>
+  );
+};
+
+/**
+ * 3. RENDERIZADOR DO FORMULÁRIO DINÂMICO
+ * Pega a estrutura JSON (o estado `fields`) e renderiza um formulário real com React Hook Form.
+ */
+const DynamicFormRenderer = ({ fields }: { fields: FormField[] }) => {
+  const { register, handleSubmit } = useForm();
+
+  const onSubmit = (data: any) => {
+    alert('Dados do formulário submetido: \n' + JSON.stringify(data, null, 2));
   };
 
-  const onDragEnd = (result: DropResult) => {
-    const { source, destination } = result;
+  if (fields.length === 0) return null;
 
-    if (!destination) {
-      return;
-    }
+  return (
+    <div className="mt-8">
+      <h3 className="text-xl font-bold mb-4">Pré-visualização do Formulário</h3>
+      <form onSubmit={handleSubmit(onSubmit)} className="p-4 border rounded-lg bg-white">
+        {fields.map((field) => (
+          <div key={field.id} className="mb-4">
+            <label className="block mb-1 font-medium">{field.label}</label>
+            {field.type === 'select' ? (
+              <select {...register(field.id)} className="w-full p-2 border rounded-md">
+                {field.options?.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type={field.type}
+                placeholder={field.placeholder}
+                {...register(field.id, { required: true })}
+                className="w-full p-2 border rounded-md"
+              />
+            )}
+          </div>
+        ))}
+        <button type="submit" className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700">
+          Enviar Formulário
+        </button>
+      </form>
+    </div>
+  );
+};
 
-    if (source.droppableId === 'toolbox' && destination.droppableId === 'phone-drop-area') {
-      const fieldToAdd = AVAILABLE_FIELDS[source.index];
+
+// --- COMPONENTE PRINCIPAL ---
+
+export default function GerenciarFormularios() {
+  // Estado central que armazena a estrutura do formulário
+  const [fields, setFields] = useState<FormField[]>([]);
+
+  // Lógica principal do Drag and Drop
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { over, active } = event;
+
+    // Verifica se o componente foi solto no canvas
+    if (over && over.id === 'form-canvas') {
+      const { type, label } = active.data.current || {};
+      
+      // Cria um novo campo com um ID único
       const newField: FormField = {
-        ...fieldToAdd,
-        id: `field-${new Date().getTime()}`,
+        id: nanoid(),
+        type,
+        label: `${label} (Novo)`,
+        placeholder: `Digite o ${label.toLowerCase()}`,
+        ...(type === 'select' && { options: ['Opção 1', 'Opção 2'] }),
       };
 
-      const newFields = Array.from(formFields);
-      newFields.splice(destination.index, 0, newField);
-      setFormFields(newFields);
+      // Adiciona o novo campo ao estado
+      setFields((currentFields) => [...currentFields, newField]);
     }
-
-    if (source.droppableId === 'phone-drop-area' && destination.droppableId === 'phone-drop-area') {
-        if (source.index === destination.index) return;
-
-        const items = Array.from(formFields);
-        const [reorderedItem] = items.splice(source.index, 1);
-        items.splice(destination.index, 0, reorderedItem);
-
-        setFormFields(items);
-    }
-  };
-
-  const handleSaveForm = () => {
-    console.log('Formulário salvo:', formFields);
-    toast({
-      title: 'Formulário Salvo!',
-      description: 'A estrutura do formulário foi salva com sucesso.',
-      status: 'success',
-      duration: 5000,
-      isClosable: true,
-      position: 'top-right',
-    });
   };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Box p={5}>
-        <Flex justify="space-between" align="center" mb={6}>
-            <Heading as="h1" size="lg">
-            Construtor de Formulários
-            </Heading>
-            <Button colorScheme="green" onClick={handleSaveForm} disabled={formFields.length === 0}>
-                Salvar Formulário
-            </Button>
-        </Flex>
+    <DndContext onDragEnd={handleDragEnd}>
+      <div className="p-8 font-sans bg-gray-50 min-h-screen">
+        <h1 className="text-3xl font-bold mb-6">Editor de Formulários Drag & Drop</h1>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Coluna 1: Paleta de Componentes */}
+          <div className="md:col-span-1">
+            <h2 className="text-xl font-semibold mb-4">Componentes</h2>
+            {PALETTE_COMPONENTS.map((comp) => (
+              <PaletteItem key={comp.type} type={comp.type} label={comp.label} />
+            ))}
+          </div>
 
-        <Flex direction={{ base: 'column', lg: 'row' }} gap={6}>
-          <Droppable droppableId="toolbox" isDropDisabled={true}>
-            {(provided) => (
-              <VStack
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                w={{ base: '100%', lg: '300px' }}
-                p={5}
-                bg="gray.50"
-                borderRadius="lg"
-                border="1px solid"
-                borderColor="gray.200"
-                align="stretch"
-                gap={4}
-              >
-                <Heading as="h3" size="md" textAlign="center" mb={2}>
-                  Componentes
-                </Heading>
-                {AVAILABLE_FIELDS.map((field, index) => (
-                  <Draggable key={field.type} draggableId={`toolbox-${field.type}`} index={index}>
-                    {(provided, snapshot) => (
-                      <>
-                        <Box
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          p={4}
-                          bg={snapshot.isDragging ? 'blue.100' : 'white'}
-                          borderRadius="md"
-                          boxShadow="sm"
-                          border="1px solid"
-                          borderColor="gray.200"
-                          cursor="grab"
-                          userSelect="none"
-                        >
-                          <Flex align="center">
-                            <Icon as={FaGripVertical} mr={3} color="gray.400" />
-                            <Text>{field.label}</Text>
-                          </Flex>
-                        </Box>
-                        {snapshot.isDragging && (
-                            <Box p={4} bg="blue.100" borderRadius="md" boxShadow="sm" border="1px solid" borderColor="gray.200">
-                                <Flex align="center">
-                                    <Icon as={FaGripVertical} mr={3} color="gray.400" />
-                                    <Text>{field.label}</Text>
-                                </Flex>
-                            </Box>
-                        )}
-                      </>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </VStack>
-            )}
-          </Droppable>
-
-          <Flex flex={1} justify="center" align="center" p={5} bg="gray.100" borderRadius="lg">
-            <Box
-              w="375px"
-              h="812px"
-              bg="white"
-              borderRadius="40px"
-              boxShadow="0 10px 30px rgba(0,0,0,0.2)"
-              border="8px solid black"
-              overflow="hidden"
-            >
-              <Droppable droppableId="phone-drop-area">
-                {(provided, snapshot) => (
-                  <VStack
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                    h="100%"
-                    p={6}
-                    bg={snapshot.isDraggingOver ? 'green.50' : 'white'}
-                    transition="background-color 0.2s ease"
-                    gap={4}
-                    align="stretch"
-                    overflowY="auto"
-                  >
-                    {formFields.length === 0 && !snapshot.isDraggingOver && (
-                      <Flex
-                        direction="column"
-                        align="center"
-                        justify="center"
-                        h="100%"
-                        textAlign="center"
-                        color="gray.400"
-                      >
-                        <Text>Arraste os componentes aqui</Text>
-                        <Text fontSize="sm">para montar seu formulário.</Text>
-                      </Flex>
-                    )}
-
-                    {formFields.map((field, index) => (
-                      <Draggable key={field.id} draggableId={field.id} index={index}>
-                        {(provided, snapshot) => (
-                          <Box
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            p={3}
-                            bg={snapshot.isDragging ? 'blue.50' : 'white'}
-                            borderRadius="md"
-                            boxShadow="sm"
-                            border="1px solid"
-                            borderColor="gray.200"
-                            position="relative"
-                          >
-                            <Flex align="center" justify="space-between">
-                                <Box {...provided.dragHandleProps} cursor="grab" p={2}>
-                                    <Icon as={FaGripVertical} color="gray.400" />
-                                </Box>
-                                <Box flex="1" mr={2}>
-                                    <RenderedFormField field={field} isPreview />
-                                </Box>
-                                <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    colorScheme="red"
-                                    onClick={() => removeField(field.id)}
-                                >
-                                    <Icon as={FaTrash} />
-                                </Button>
-                            </Flex>
-                          </Box>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </VStack>
-                )}
-              </Droppable>
-            </Box>
-          </Flex>
-        </Flex>
-      </Box>
-    </DragDropContext>
+          {/* Coluna 2: Canvas e Pré-visualização */}
+          <div className="md:col-span-2">
+            <h2 className="text-xl font-semibold mb-4">Área de Construção</h2>
+            <FormCanvas fields={fields} />
+            <DynamicFormRenderer fields={fields} />
+          </div>
+        </div>
+      </div>
+    </DndContext>
   );
 }
-
-// --- Componente Wrapper que exportamos ---
-const GerenciarFormularios = () => (
-  <ChakraProvider>
-    <FormBuilder />
-  </ChakraProvider>
-);
-
-
-export default GerenciarFormularios;
