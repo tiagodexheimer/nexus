@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Box,
   Heading,
@@ -16,7 +17,7 @@ import {
   DragDropContext,
   Droppable,
   Draggable,
-  DropResult,
+  type DropResult, // CORREÇÃO: Adicionado 'type' para importação de tipo
 } from '@hello-pangea/dnd';
 import { FaGripVertical, FaTrash } from 'react-icons/fa';
 

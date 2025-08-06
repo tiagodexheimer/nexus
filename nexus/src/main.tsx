@@ -2,16 +2,15 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { ChakraProvider } from '@chakra-ui/react';
+import { BrowserRouter } from 'react-router-dom';
 import App from './App.tsx';
-import theme from './styles/theme'; // 1. Importe o seu tema personalizado
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    {/* 2. Passe o tema para o Provider */}
-    <ChakraProvider theme={theme}>
+    {/* O BrowserRouter é necessário para que as rotas (Routes) funcionem no App. */}
+    <BrowserRouter>
       <App />
-    </ChakraProvider>
+    </BrowserRouter>
   </React.StrictMode>,
 );

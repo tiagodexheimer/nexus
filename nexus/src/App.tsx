@@ -1,6 +1,6 @@
 // nexus/src/App.tsx
 import React, { useState } from 'react';
-import { CssBaseline, ThemeProvider } from '@mui/material';
+import { CssBaseline, ThemeProvider as MuiThemeProvider } from '@mui/material';
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import theme from './styles/theme';
@@ -10,6 +10,7 @@ import Rotas from './pages/Rotas';
 import Relatorios from './pages/Relatorios';
 import Gerenciar from './pages/Gerenciar';
 import SobrePage from './pages/Sobre';
+import { ChakraProvider } from '@chakra-ui/react';
 // Importe os novos componentes
 import GerenciarEspecies from './pages/gerenciar/GerenciarEspecies';
 import GerenciarFormularios from './pages/gerenciar/GerenciarFormularios';
@@ -31,7 +32,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <ThemeProvider theme={theme}>
+    <MuiThemeProvider theme={theme}>
       <CssBaseline />
       <Layout
         isLoggedIn={isLoggedIn}
@@ -48,7 +49,8 @@ const App: React.FC = () => {
               <Route path="/gerenciar" element={<Gerenciar />} />
               {/* Adicione as novas rotas de gerenciamento aqui */}
               <Route path="/gerenciar/especies" element={<GerenciarEspecies />} />
-              <Route path="/gerenciar/formularios" element={<GerenciarFormularios />} />
+              <Route
+                path="/ger
               <Route path="/gerenciar/rotas" element={<GerenciarRotas />} />
               <Route path="/gerenciar/status" element={<GerenciarStatus />} />
               <Route path="/gerenciar/tipos-vistoria" element={<GerenciarTiposVistoria />} />
