@@ -12,11 +12,12 @@ import {
 interface ConfirmacaoDialogProps {
   open: boolean;
   onClose: () => void;
+  onConfirm: () => void;
   title: string;
-  message: string;
+  description: string;
 }
 
-const ConfirmacaoDialog: React.FC<ConfirmacaoDialogProps> = ({ open, onClose, title, message }) => {
+const ConfirmacaoDialog: React.FC<ConfirmacaoDialogProps> = ({ open, onClose, onConfirm, title, description }) => {
   return (
     <Dialog
       open={open}
@@ -29,12 +30,13 @@ const ConfirmacaoDialog: React.FC<ConfirmacaoDialogProps> = ({ open, onClose, ti
       </DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          {message}
+          {description}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} autoFocus>
-          OK
+        <Button onClick={onClose}>Cancelar</Button>
+        <Button onClick={onConfirm} color="primary" autoFocus>
+          Confirmar
         </Button>
       </DialogActions>
     </Dialog>

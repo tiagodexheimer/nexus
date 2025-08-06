@@ -36,7 +36,7 @@ const NovaSolicitacaoDialog: React.FC<NovaSolicitacaoDialogProps> = ({ open, onC
     bairro: '',
     prazo: 0,
     descricao: '',
-    status: 'Aguardando agendamento', // Corrected 'Aguardando Agendamento' to 'Aguardando agendamento'
+    status: 'Sem rota',
     anexos: [],
   };
 
@@ -70,7 +70,7 @@ const NovaSolicitacaoDialog: React.FC<NovaSolicitacaoDialogProps> = ({ open, onC
   const handleRemoveFile = (fileName: string) => {
     setFormState(prevState => ({
       ...prevState,
-      anexos: prevState.anexos.filter(file => file.name !== fileName),
+      anexos: prevState.anexos.filter((file: File) => file.name !== fileName),
     }));
   };
 
@@ -111,7 +111,7 @@ const NovaSolicitacaoDialog: React.FC<NovaSolicitacaoDialogProps> = ({ open, onC
             <Box mt={1}>
               <Typography variant="subtitle2">Ficheiros selecionados:</Typography>
               <List dense>
-                {formState.anexos.map(file => (
+                {formState.anexos.map((file: File) => (
                   <ListItem key={file.name} secondaryAction={<IconButton edge="end" aria-label="delete" onClick={() => handleRemoveFile(file.name)}><DeleteIcon /></IconButton>}>
                     <ListItemText primary={file.name} />
                   </ListItem>

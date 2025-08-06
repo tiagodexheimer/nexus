@@ -34,8 +34,8 @@ const DetalhesSolicitacaoDialog: React.FC<DetalhesSolicitacaoDialogProps> = ({ o
         return { label: 'Agendado', sx: { backgroundColor: '#2196f3', color: 'white' } };
       case 'Em Rota': // Corrected 'Em rota' to 'Em Rota' to match type definition
         return { label: 'Em Rota', color: 'warning' as 'warning' };
-      case 'Concluído':
-        return { label: 'Concluído', color: 'success' as 'success' };
+      case 'Concluída':
+        return { label: 'Concluída', color: 'success' as 'success' };
       default:
         return { label: status, color: 'default' as 'default' };
     }

@@ -1,172 +1,160 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
-  Container,
-  Box,
-  Typography,
   TextField,
   Button,
-  CircularProgress,
+  Box,
+  Typography,
+  Container,
 } from '@mui/material';
-import { registerUser } from '../api/register/Register';
 
-// Define a interface para as props que o componente espera receber
 interface CadastroFormProps {
-    onSignUpSuccess: () => void;
+  onSignUpSuccess: () => void;
 }
 
-// O componente agora aceita a prop 'onSignUpSuccess'
 const CadastroForm: React.FC<CadastroFormProps> = ({ onSignUpSuccess }) => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [profession, setProfession] = useState('');
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
-  
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      setError('');
-  
-      if (password !== confirmPassword) {
-        setError('As senhas não coincidem.');
-        return;
-      }
-      if (!name || !email || !password || !username) {
-          setError('Por favor, preencha todos os campos obrigatórios.');
-          return;
-      }
-  
-      setLoading(true);
-      try {
-        await registerUser(name, email, password);
-        // Chama a função de sucesso passada pelo componente pai (SobrePage)
-        onSignUpSuccess();
-      } catch (err: any) {      
-          setError(err.message || 'Ocorreu um erro no cadastro.');
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    return (
-        <Container maxWidth="sm">
-            <Box
-            sx={{
-                my: { xs: 4, md: 8 },
-                mx: { xs: 2, md: 4 },
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-            }}
-            >
-                <Typography variant="h6" component="h2" gutterBottom align="center">
-                    Para acessar nossa plataforma crie sua conta:
-                </Typography>
-                <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
-                    <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="name"
-                    label="Nome Completo"
-                    name="name"
-                    autoComplete="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    disabled={loading}
-                    />
-                    <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="email"
-                    label="Email"
-                    name="email"
-                    autoComplete="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    disabled={loading}
-                    />
-                    <TextField
-                    margin="normal"
-                    fullWidth
-                    id="profession"
-                    label="Profissão"
-                    name="profession"
-                    value={profession}
-                    onChange={(e) => setProfession(e.target.value)}
-                    disabled={loading}
-                    />
-                    <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="username"
-                    label="Usuário"
-                    name="username"
-                    autoComplete="username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    disabled={loading}
-                    />
-                    <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="password"
-                    label="Senha"
-                    type="password"
-                    id="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    disabled={loading}
-                    />
-                    <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="confirmPassword"
-                    label="Repita sua senha"
-                    type="password"
-                    id="confirmPassword"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    disabled={loading}
-                    />
-                    {error && (
-                    <Typography color="error" variant="body2" sx={{ mt: 1 }}>
-                        {error}
-                    </Typography>
-                    )}
-                    <Box sx={{ position: 'relative', mt: 2 }}>
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        disabled={loading}
-                    >
-                        Cadastrar
-                    </Button>
-                    {loading && (
-                        <CircularProgress
-                        size={24}
-                        sx={{
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            marginTop: '-12px',
-                            marginLeft: '-12px',
-                        }}
-                        />
-                    )}
-                    </Box>
-                </Box>
-            </Box>
-        </Container>
-    );
+  const [formData, setFormData] = useState({
+    nome: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+
+  const [errors, setErrors] = useState({
+    nome: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
   };
 
-  export default CadastroForm;
+  const validate = () => {
+    let tempErrors = { nome: '', email: '', password: '', confirmPassword: '' };
+    let isValid = true;
+
+    if (!formData.nome) {
+      tempErrors.nome = 'O nome é obrigatório.';
+      isValid = false;
+    }
+    if (!formData.email) {
+      tempErrors.email = 'O email é obrigatório.';
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      tempErrors.email = 'O email não é válido.';
+      isValid = false;
+    }
+    if (!formData.password) {
+      tempErrors.password = 'A senha é obrigatória.';
+      isValid = false;
+    } else if (formData.password.length < 6) {
+      tempErrors.password = 'A senha deve ter pelo menos 6 caracteres.';
+      isValid = false;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      tempErrors.confirmPassword = 'As senhas não coincidem.';
+      isValid = false;
+    }
+
+    setErrors(tempErrors);
+    return isValid;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validate()) {
+      console.log('Formulário enviado:', formData);
+      // Aqui você adicionaria a lógica para enviar os dados para o backend
+      onSignUpSuccess();
+    }
+  };
+
+  return (
+    <Container component="main" maxWidth="xs">
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Typography component="h1" variant="h5">
+          Cadastre-se
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="nome"
+            label="Nome Completo"
+            name="nome"
+            autoComplete="name"
+            autoFocus
+            value={formData.nome}
+            onChange={handleChange}
+            error={!!errors.nome}
+            helperText={errors.nome}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Endereço de Email"
+            name="email"
+            autoComplete="email"
+            value={formData.email}
+            onChange={handleChange}
+            error={!!errors.email}
+            helperText={errors.email}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Senha"
+            type="password"
+            id="password"
+            autoComplete="new-password" // Alterado para corrigir o aviso
+            value={formData.password}
+            onChange={handleChange}
+            error={!!errors.password}
+            helperText={errors.password}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="confirmPassword"
+            label="Confirmar Senha"
+            type="password"
+            id="confirmPassword"
+            autoComplete="new-password" // Alterado para corrigir o aviso
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            error={!!errors.confirmPassword}
+            helperText={errors.confirmPassword}
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Cadastrar
+          </Button>
+        </Box>
+      </Box>
+    </Container>
+  );
+};
+
+export default CadastroForm;

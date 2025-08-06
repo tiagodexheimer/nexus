@@ -88,17 +88,17 @@ const Header = ({ isLoggedIn, onLoginSuccess, onLogout, onDrawerToggle }: Header
         {isLoggedIn ? (
           // --- APARÊNCIA QUANDO LOGADO ---
           <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={onDrawerToggle}
-              sx={{ mr: 2, display: { md: 'none' } }} // Visível apenas em mobile
-            >
-              <MenuIcon />
-            </IconButton>
-            
-            <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                edge="start"
+                onClick={onDrawerToggle}
+                sx={{ mr: 2, display: { md: 'none' } }} // Visível apenas em mobile
+              >
+                <MenuIcon />
+              </IconButton>
+              
               <Avatar src={logoSrc} alt="Nexus Logo" sx={{ width: 35, height: 35, mr: 1, display: { xs: 'none', md: 'flex' } }} />
               <Typography variant="h6" component="div" noWrap>
                 Nexus Ambiental

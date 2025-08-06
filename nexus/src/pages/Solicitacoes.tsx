@@ -26,22 +26,22 @@ const initialSolicitacoes: Solicitacao[] = [
     { id: 'SOL-002', prazo: 2, rua: 'Av. Brasil, 1250', bairro: 'Jardim América', descricao: 'Remoção de galhos caídos após tempestade.', status: 'Aguardando agendamento', mapaUrl: mapaExemplo, anexos: [] },
     { id: 'SOL-003', prazo: 10, rua: 'Rua das Acácias, 45', bairro: 'Vila Nova', descricao: 'Análise de árvore com suspeita de doença.', status: 'Agendado', mapaUrl: mapaExemplo, anexos: [] },
     { id: 'SOL-004', prazo: 1, rua: 'Rua São José, 789', bairro: 'Centro', descricao: 'Supressão de árvore morta com risco iminente de queda.', status: 'Em Rota', mapaUrl: mapaExemplo, anexos: [] },
-    { id: 'SOL-005', prazo: 7, rua: 'Rua Tiradentes, 500', bairro: 'Vila Industrial', descricao: 'Vistoria de rotina.', status: 'Concluído', mapaUrl: mapaExemplo, anexos: [] },
+    { id: 'SOL-005', prazo: 7, rua: 'Rua Tiradentes, 500', bairro: 'Vila Industrial', descricao: 'Vistoria de rotina.', status: 'Concluída', mapaUrl: mapaExemplo, anexos: [] },
     { id: 'SOL-006', prazo: 3, rua: 'Av. Getúlio Vargas, 2000', bairro: 'Centro', descricao: 'Avaliação de galho quebado.', status: 'Sem rota', mapaUrl: mapaExemplo, anexos: [] },
     { id: 'SOL-007', prazo: 8, rua: 'Rua Dom Pedro II, 330', bairro: 'São Luís', descricao: 'Poda de levantamento de copa.', status: 'Aguardando agendamento', mapaUrl: mapaExemplo, anexos: [] },
     { id: 'SOL-008', prazo: 4, rua: 'Rua Sete de Setembro, 150', bairro: 'Centro', descricao: 'Verificação de infestação por pragas.', status: 'Agendado', mapaUrl: mapaExemplo, anexos: [] },
     { id: 'SOL-009', prazo: 6, rua: 'Rua da República, 850', bairro: 'Rio Branco', descricao: 'Remoção de árvore caída em calçada.', status: 'Em Rota', mapaUrl: mapaExemplo, anexos: [] },
-    { id: 'SOL-010', prazo: 12, rua: 'Av. Independência, 910', bairro: 'Jardim Botânico', descricao: 'Análise para transplante de muda.', status: 'Concluído', mapaUrl: mapaExemplo, anexos: [] },
+    { id: 'SOL-010', prazo: 12, rua: 'Av. Independência, 910', bairro: 'Jardim Botânico', descricao: 'Análise para transplante de muda.', status: 'Concluída', mapaUrl: mapaExemplo, anexos: [] },
     { id: 'SOL-011', prazo: 2, rua: 'Rua Vinte e Quatro de Outubro, 111', bairro: 'Moinhos de Vento', descricao: 'Poda de contenção.', status: 'Sem rota', mapaUrl: mapaExemplo, anexos: [] },
     { id: 'SOL-012', prazo: 5, rua: 'Rua Anita Garibaldi, 2345', bairro: 'Boa Vista', descricao: 'Vistoria de saúde de árvore idosa.', status: 'Aguardando agendamento', mapaUrl: mapaExemplo, anexos: [] },
     { id: 'SOL-013', prazo: 9, rua: 'Av. Ipiranga, 5550', bairro: 'Partenon', descricao: 'Avaliação de raízes expostas.', status: 'Agendado', mapaUrl: mapaExemplo, anexos: [] },
     { id: 'SOL-014', prazo: 3, rua: 'Rua dos Andradas, 1001', bairro: 'Centro Histórico', descricao: 'Remoção de galhos secos.', status: 'Em Rota', mapaUrl: mapaExemplo, anexos: [] },
-    { id: 'SOL-015', prazo: 15, rua: 'Av. Protásio Alves, 7000', bairro: 'Alto Petrópolis', descricao: 'Laudo técnico para supressão.', status: 'Concluído', mapaUrl: mapaExemplo, anexos: [] },
+    { id: 'SOL-015', prazo: 15, rua: 'Av. Protásio Alves, 7000', bairro: 'Alto Petrópolis', descricao: 'Laudo técnico para supressão.', status: 'Concluída', mapaUrl: mapaExemplo, anexos: [] },
     { id: 'SOL-016', prazo: 4, rua: 'Rua Coronel Bordini, 830', bairro: 'Auxiliadora', descricao: 'Poda de limpeza.', status: 'Sem rota', mapaUrl: mapaExemplo, anexos: [] },
     { id: 'SOL-017', prazo: 7, rua: 'Av. Wenceslau Escobar, 1823', bairro: 'Tristeza', descricao: 'Avaliação de inclinação de tronco.', status: 'Aguardando agendamento', mapaUrl: mapaExemplo, anexos: [] },
     { id: 'SOL-018', prazo: 3, rua: 'Rua Doutor Timóteo, 755', bairro: 'Floresta', descricao: 'Verificação de danos por colisão de veículo.', status: 'Agendado', mapaUrl: mapaExemplo, anexos: [] },
     { id: 'SOL-019', prazo: 5, rua: 'Av. Padre Cacique, 891', bairro: 'Praia de Belas', descricao: 'Poda para desobstrução de sinalização.', status: 'Em Rota', mapaUrl: mapaExemplo, anexos: [] },
-    { id: 'SOL-020', prazo: 10, rua: 'Rua Goethe, 200', bairro: 'Rio Branco', descricao: 'Análise de solo e adubação.', status: 'Concluído', mapaUrl: mapaExemplo, anexos: [] },
+    { id: 'SOL-020', prazo: 10, rua: 'Rua Goethe, 200', bairro: 'Rio Branco', descricao: 'Análise de solo e adubação.', status: 'Concluída', mapaUrl: mapaExemplo, anexos: [] },
 ];
 
 const Solicitacoes: React.FC = () => {
@@ -180,7 +180,7 @@ const Solicitacoes: React.FC = () => {
     { label: 'Aguardando Agendamento', data: getSolicitacoesPorStatus('Aguardando agendamento') },
     { label: 'Agendado', data: getSolicitacoesPorStatus('Agendado') },
     { label: 'Em Rota', data: getSolicitacoesPorStatus('Em Rota') },
-    { label: 'Concluído', data: getSolicitacoesPorStatus('Concluído') },
+    { label: 'Concluídas', data: getSolicitacoesPorStatus('Concluída') },
   ];
 
   return (
@@ -265,7 +265,8 @@ const Solicitacoes: React.FC = () => {
         open={confirmacaoDialogOpen}
         onClose={handleCloseConfirmacaoDialog}
         title="Sucesso!"
-        message={confirmacaoMessage}
+        description={confirmacaoMessage}
+        onConfirm={handleCloseConfirmacaoDialog} // Reutiliza a função de fechar
       />
       <EditarSolicitacaoDialog
         open={editarDialogOpen}
