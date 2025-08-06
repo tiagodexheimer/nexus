@@ -23,6 +23,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+// Corrigido o caminho de importação
 import { FormBuilder, FormCanvas, type FormField } from '../../components/FormBuilder';
 
 // --- TIPOS E DADOS INICIAIS ---
@@ -35,6 +36,7 @@ interface MockForm {
     fields: FormField[];
 }
 
+// Corrigido os tipos dos campos de formulário para corresponder à interface FormField
 const initialMockForms: MockForm[] = [
     { 
         id: 'FORM-001', 
@@ -42,11 +44,13 @@ const initialMockForms: MockForm[] = [
         description: 'Formulário completo para vistorias de rotina.', 
         lastModified: '2025-08-05',
         fields: [
-            { id: nanoid(), type: 'text', label: 'Endereço', placeholder: 'Rua, Número, Bairro' },
+            // Alterado 'text' para 'textarea'
+            { id: nanoid(), type: 'textarea', label: 'Endereço', placeholder: 'Rua, Número, Bairro' },
             { id: nanoid(), type: 'date', label: 'Data da Vistoria' },
             { id: nanoid(), type: 'select', label: 'Tipo de Vistoria', options: ['Poda', 'Supressão', 'Análise'] },
             { id: nanoid(), type: 'textarea', label: 'Observações', placeholder: 'Descreva a situação...' },
-            { id: nanoid(), type: 'checkbox', label: 'Risco Iminente?' },
+            // Alterado 'checkbox' para 'checkbox-group' e adicionado 'options'
+            { id: nanoid(), type: 'checkbox-group', label: 'Risco Iminente?', options: ['Sim'] },
         ]
     },
     { 
@@ -55,8 +59,10 @@ const initialMockForms: MockForm[] = [
         description: 'Formulário simplificado para pedidos de supressão.', 
         lastModified: '2025-07-28',
         fields: [
-            { id: nanoid(), type: 'text', label: 'Nome do Solicitante', placeholder: 'Nome completo' },
-            { id: nanoid(), type: 'email', label: 'Email de Contato', placeholder: 'exemplo@email.com' },
+            // Alterado 'text' para 'textarea'
+            { id: nanoid(), type: 'textarea', label: 'Nome do Solicitante', placeholder: 'Nome completo' },
+            // Alterado 'email' para 'textarea'
+            { id: nanoid(), type: 'textarea', label: 'Email de Contato', placeholder: 'exemplo@email.com' },
             { id: nanoid(), type: 'file', label: 'Anexar Documento' },
         ]
     },
@@ -68,7 +74,8 @@ const initialMockForms: MockForm[] = [
         fields: [
             { id: nanoid(), type: 'number', label: 'Nível de Risco (1-5)', placeholder: '1' },
             { id: nanoid(), type: 'multiselect', label: 'Sinais de Risco', options: ['Galhos secos', 'Inclinação acentuada', 'Cavidades no tronco', 'Raízes expostas'] },
-            { id: nanoid(), type: 'checkbox', label: 'Requer ação imediata?' },
+            // Alterado 'checkbox' para 'checkbox-group' e adicionado 'options'
+            { id: nanoid(), type: 'checkbox-group', label: 'Requer ação imediata?', options: ['Sim'] },
         ]
     },
 ];
