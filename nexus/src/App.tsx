@@ -1,6 +1,6 @@
 // nexus/src/App.tsx
 import React, { useState } from 'react';
-import { CssBaseline, ThemeProvider as MuiThemeProvider } from '@mui/material';
+import { CssBaseline, extendTheme, ThemeProvider as MuiThemeProvider } from '@mui/material';
 import { Routes, Route } from 'react-router-dom';
 import { ChakraProvider } from '@chakra-ui/react';
 import Layout from './components/Layout';
@@ -11,13 +11,15 @@ import Rotas from './pages/Rotas';
 import Relatorios from './pages/Relatorios';
 import Gerenciar from './pages/Gerenciar';
 import SobrePage from './pages/Sobre';
-// Importe os novos componentes
 import GerenciarEspecies from './pages/gerenciar/GerenciarEspecies';
 import GerenciarFormularios from './pages/gerenciar/GerenciarFormularios';
 import GerenciarRotas from './pages/gerenciar/GerenciarRotas';
 import GerenciarStatus from './pages/gerenciar/GerenciarStatus';
 import GerenciarTiposVistoria from './pages/gerenciar/GerenciarTiposVistoria';
 import GerenciarUsuarios from './pages/gerenciar/GerenciarUsuarios';
+
+// Estenda o tema padrão do Chakra (mesmo que vazio, é necessário para o provider)
+const theme = extendTheme({});
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -32,7 +34,7 @@ const App: React.FC = () => {
 
   return (
     <MuiThemeProvider theme={muiTheme}>
-      <ChakraProvider>
+      <ChakraProvider> {/* Passe o tema para o provider */}
         <CssBaseline />
         <Layout
           isLoggedIn={isLoggedIn}

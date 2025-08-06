@@ -7,12 +7,12 @@ import {
   Button,
   VStack,
   Input,
-  Checkbox,
   Select,
   Textarea,
   Icon,
-  useToast,
 } from '@chakra-ui/react';
+import { Checkbox } from '@chakra-ui/react';
+import { useToast } from '@chakra-ui/react';
 import {
   DragDropContext,
   Droppable,
